@@ -282,6 +282,13 @@ hr.sep{border:none;height:1px;background:#1b2030;margin:20px 0}
   </div>
 </section>
 
+<!-- Firebase App (necessary for Firebase SDK) -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+
+<!-- Firebase Firestore SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+
+
 <footer id="contacto" class="container">
   <div class="foot">
     <div><strong>Agencia Digital</strong><p style="color:#aab1c6">Diseño web, redes sociales, publicidad y capacitación. Gestión integral: agenda, tareas y cotizador.</p></div>
@@ -577,308 +584,304 @@ $('#clearDone').onclick=()=>{ tasks = tasks.filter(t=>!t.done); store.set('tasks
 </script>
 
 <script>
-  // Importar las funciones necesarias de Firebase SDK
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
-
-// Configuración de Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyATG7OT4eqF8TlzEMBEC30dN7qzwqw0GN0",
-  authDomain: "hgestor-89f1a.firebaseapp.com",
-  projectId: "hgestor-89f1a",
-  storageBucket: "hgestor-89f1a.firebasestorage.app",
-  messagingSenderId: "465567006153",
-  appId: "1:465567006153:web:a970c8209fe31010fd7c18"
-};
-
-// Inicializar Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// Helper Functions
-const $ = (q, root = document) => root.querySelector(q);
-const $$ = (q, root = document) => Array.from(root.querySelectorAll(q));
-const COP = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
-const fmtMoney = n => COP.format(n || 0);
-const todayStr = () => new Date().toISOString().slice(0, 10);
-
-// Storage Functions
-const store = {
-  get(k, def) { 
-    try { return JSON.parse(localStorage.getItem(k)) ?? def } 
-    catch { return def } 
-  },
-  set(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
-};
-
-let services = store.get('services', []);
-let appts = store.get('appts', []);
-let tasks = store.get('tasks', []);
-let quoteSel = new Set(store.get('quoteSel', []));
-
-// Funciones para guardar en Firebase
-
-// Guardar servicio en Firebase
-async function saveServiceToFirebase(service) {
-  try {
-    const docRef = await addDoc(collection(db, "services"), service);
-    console.log("Servicio guardado con ID:", docRef.id);
-  } catch (e) {
-    console.error("Error al agregar el servicio: ", e);
-  }
-}
-
-// Guardar tarea en Firebase
-async function saveTaskToFirebase(task) {
-  try {
-    const docRef = await addDoc(collection(db, "tasks"), task);
-    console.log("Tarea guardada con ID:", docRef.id);
-  } catch (e) {
-    console.error("Error al agregar la tarea: ", e);
-  }
-}
-
-// Guardar cita en Firebase
-async function saveAppointmentToFirebase(appt) {
-  try {
-    const docRef = await addDoc(collection(db, "appointments"), appt);
-    console.log("Cita guardada con ID:", docRef.id);
-  } catch (e) {
-    console.error("Error al agregar la cita: ", e);
-  }
-}
-
-// Funciones para cargar desde Firebase
-
-// Cargar servicios desde Firebase
-async function loadServicesFromFirebase() {
-  const querySnapshot = await getDocs(collection(db, "services"));
-  querySnapshot.forEach((doc) => {
-    services.push(doc.data());
-  });
-  store.set('services', services); 
-  renderServices();
-}
-
-// Cargar citas desde Firebase
-async function loadAppointmentsFromFirebase() {
-  const querySnapshot = await getDocs(collection(db, "appointments"));
-  querySnapshot.forEach((doc) => {
-    appts.push(doc.data());
-  });
-  store.set('appts', appts);
-  renderApptList();
-}
-
-// Cargar tareas desde Firebase
-async function loadTasksFromFirebase() {
-  const querySnapshot = await getDocs(collection(db, "tasks"));
-  querySnapshot.forEach((doc) => {
-    tasks.push(doc.data());
-  });
-  store.set('tasks', tasks);
-  renderTasks();
-}
-
-// Cargar datos al iniciar la página
-window.onload = () => {
-  loadServicesFromFirebase();
-  loadAppointmentsFromFirebase();
-  loadTasksFromFirebase();
-};
-
-// Funciones de interacción con los formularios (Servicios, Tareas, Citas)
-
-// Agregar servicio
-$('#serviceForm').addEventListener('submit', e => {
-  e.preventDefault();
-
-  const newService = {
-    name: $('#svc-name').value.trim(),
-    cat: $('#svc-cat').value,
-    price: Number($('#svc-price').value || 0),
-    meta: $('#svc-meta').value.trim(),
-    desc: $('#svc-desc').value.trim(),
+  // Configuración de Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyATG7OT4eqF8TlzEMBEC30dN7qzwqw0GN0",
+    authDomain: "hgestor-89f1a.firebaseapp.com",
+    projectId: "hgestor-89f1a",
+    storageBucket: "hgestor-89f1a.firebasestorage.app",
+    messagingSenderId: "465567006153",
+    appId: "1:465567006153:web:a970c8209fe31010fd7c18"
   };
 
-  // Guardar el servicio en Firebase
-  saveServiceToFirebase(newService);
+  // Inicializar Firebase
+  const app = firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore(app);
 
-  // Agregar al array local y renderizar
-  services.push(newService);
-  store.set('services', services);
-  e.target.reset();
-  renderServices();
-});
+  // Helper Functions
+  const $ = (q, root = document) => root.querySelector(q);
+  const $$ = (q, root = document) => Array.from(root.querySelectorAll(q));
+  const COP = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
+  const fmtMoney = n => COP.format(n || 0);
+  const todayStr = () => new Date().toISOString().slice(0, 10);
 
-// Agregar tarea
-$('#taskForm').addEventListener('submit', e => {
-  e.preventDefault();
-
-  const newTask = {
-    title: $('#task-title').value.trim(),
-    due: $('#task-due').value || null,
-    project: $('#task-project').value.trim(),
-    priority: $('#task-priority').value,
-    notes: $('#task-notes').value.trim(),
-    done: false,
+  // Storage Functions
+  const store = {
+    get(k, def) {
+      try { return JSON.parse(localStorage.getItem(k)) ?? def }
+      catch { return def }
+    },
+    set(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
   };
 
-  // Guardar la tarea en Firebase
-  saveTaskToFirebase(newTask);
+  let services = store.get('services', []);
+  let appts = store.get('appts', []);
+  let tasks = store.get('tasks', []);
+  let quoteSel = new Set(store.get('quoteSel', []));
 
-  // Agregar al array local y renderizar
-  tasks.push(newTask);
-  store.set('tasks', tasks);
-  e.target.reset();
-  renderTasks();
-});
+  // Funciones para guardar en Firebase
 
-// Agregar cita
-$('#apptForm').addEventListener('submit', e => {
-  e.preventDefault();
+  // Guardar servicio en Firebase
+  async function saveServiceToFirebase(service) {
+    try {
+      const docRef = await db.collection("services").add(service);
+      console.log("Servicio guardado con ID:", docRef.id);
+    } catch (e) {
+      console.error("Error al agregar el servicio: ", e);
+    }
+  }
 
-  const newAppt = {
-    title: $('#appt-title').value.trim(),
-    datetime: $('#appt-datetime').value,
-    notes: $('#appt-notes').value.trim(),
+  // Guardar tarea en Firebase
+  async function saveTaskToFirebase(task) {
+    try {
+      const docRef = await db.collection("tasks").add(task);
+      console.log("Tarea guardada con ID:", docRef.id);
+    } catch (e) {
+      console.error("Error al agregar la tarea: ", e);
+    }
+  }
+
+  // Guardar cita en Firebase
+  async function saveAppointmentToFirebase(appt) {
+    try {
+      const docRef = await db.collection("appointments").add(appt);
+      console.log("Cita guardada con ID:", docRef.id);
+    } catch (e) {
+      console.error("Error al agregar la cita: ", e);
+    }
+  }
+
+  // Funciones para cargar desde Firebase
+
+  // Cargar servicios desde Firebase
+  async function loadServicesFromFirebase() {
+    const querySnapshot = await db.collection("services").get();
+    querySnapshot.forEach((doc) => {
+      services.push(doc.data());
+    });
+    store.set('services', services);
+    renderServices();
+  }
+
+  // Cargar citas desde Firebase
+  async function loadAppointmentsFromFirebase() {
+    const querySnapshot = await db.collection("appointments").get();
+    querySnapshot.forEach((doc) => {
+      appts.push(doc.data());
+    });
+    store.set('appts', appts);
+    renderApptList();
+  }
+
+  // Cargar tareas desde Firebase
+  async function loadTasksFromFirebase() {
+    const querySnapshot = await db.collection("tasks").get();
+    querySnapshot.forEach((doc) => {
+      tasks.push(doc.data());
+    });
+    store.set('tasks', tasks);
+    renderTasks();
+  }
+
+  // Cargar datos al iniciar la página
+  window.onload = () => {
+    loadServicesFromFirebase();
+    loadAppointmentsFromFirebase();
+    loadTasksFromFirebase();
   };
 
-  // Guardar la cita en Firebase
-  saveAppointmentToFirebase(newAppt);
+  // Funciones de interacción con los formularios (Servicios, Tareas, Citas)
 
-  // Agregar al array local y renderizar
-  appts.push(newAppt);
-  store.set('appts', appts);
-  e.target.reset();
-  renderApptList();
-});
+  // Agregar servicio
+  $('#serviceForm').addEventListener('submit', e => {
+    e.preventDefault();
 
-// Funciones de renderizado (Servicios, Tareas, Citas, Cotización)
+    const newService = {
+      name: $('#svc-name').value.trim(),
+      cat: $('#svc-cat').value,
+      price: Number($('#svc-price').value || 0),
+      meta: $('#svc-meta').value.trim(),
+      desc: $('#svc-desc').value.trim(),
+    };
 
-// Renderizar servicios
-function renderServices() {
-  const wrap = $('#servicesList');
-  wrap.innerHTML = '';
-  services.forEach((s, i) => {
-    const checked = quoteSel.has(s.id) ? 'checked' : '';
-    const el = document.createElement('div');
-    el.className = 'item fadein';
-    el.innerHTML = `
-      <div>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <input type="checkbox" data-select="${s.id}" title="Agregar al cotizador" ${checked}/>
-          <strong>${s.name}</strong>
-          <span class="badge-cat">${s.cat}</span>
-          <span class="price">${fmtMoney(s.price)}</span>
+    // Guardar el servicio en Firebase
+    saveServiceToFirebase(newService);
+
+    // Agregar al array local y renderizar
+    services.push(newService);
+    store.set('services', services);
+    e.target.reset();
+    renderServices();
+  });
+
+  // Agregar tarea
+  $('#taskForm').addEventListener('submit', e => {
+    e.preventDefault();
+
+    const newTask = {
+      title: $('#task-title').value.trim(),
+      due: $('#task-due').value || null,
+      project: $('#task-project').value.trim(),
+      priority: $('#task-priority').value,
+      notes: $('#task-notes').value.trim(),
+      done: false,
+    };
+
+    // Guardar la tarea en Firebase
+    saveTaskToFirebase(newTask);
+
+    // Agregar al array local y renderizar
+    tasks.push(newTask);
+    store.set('tasks', tasks);
+    e.target.reset();
+    renderTasks();
+  });
+
+  // Agregar cita
+  $('#apptForm').addEventListener('submit', e => {
+    e.preventDefault();
+
+    const newAppt = {
+      title: $('#appt-title').value.trim(),
+      datetime: $('#appt-datetime').value,
+      notes: $('#appt-notes').value.trim(),
+    };
+
+    // Guardar la cita en Firebase
+    saveAppointmentToFirebase(newAppt);
+
+    // Agregar al array local y renderizar
+    appts.push(newAppt);
+    store.set('appts', appts);
+    e.target.reset();
+    renderApptList();
+  });
+
+  // Funciones de renderizado (Servicios, Tareas, Citas, Cotización)
+
+  // Renderizar servicios
+  function renderServices() {
+    const wrap = $('#servicesList');
+    wrap.innerHTML = '';
+    services.forEach((s, i) => {
+      const checked = quoteSel.has(s.id) ? 'checked' : '';
+      const el = document.createElement('div');
+      el.className = 'item fadein';
+      el.innerHTML = `
+        <div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <input type="checkbox" data-select="${s.id}" title="Agregar al cotizador" ${checked}/>
+            <strong>${s.name}</strong>
+            <span class="badge-cat">${s.cat}</span>
+            <span class="price">${fmtMoney(s.price)}</span>
+          </div>
+          <div class="meta">${s.meta ? s.meta + ' · ' : ''}${s.desc || ''}</div>
         </div>
-        <div class="meta">${s.meta ? s.meta + ' · ' : ''}${s.desc || ''}</div>
-      </div>
-      <div class="actions">
-        <button class="iconbtn" data-edit="${i}">Editar</button>
-        <button class="iconbtn danger" data-del="${i}">Eliminar</button>
-      </div>`;
-    wrap.appendChild(el);
+        <div class="actions">
+          <button class="iconbtn" data-edit="${i}">Editar</button>
+          <button class="iconbtn danger" data-del="${i}">Eliminar</button>
+        </div>`;
+      wrap.appendChild(el);
+    });
+  }
+
+  // Renderizar tareas
+  function renderTasks() {
+    const wrap = $('#taskList');
+    wrap.innerHTML = '';
+    tasks.forEach(t => {
+      const el = document.createElement('div');
+      el.className = 'item fadein';
+      el.innerHTML = `
+        <div>
+          <strong>${t.title}</strong>
+          <div class="meta">${t.due || 'Sin fecha'} · ${t.project || 'Sin proyecto'} · ${t.priority}</div>
+        </div>
+        <div class="actions">
+          <button class="iconbtn" data-edit="${t.id}">Editar</button>
+          <button class="iconbtn danger" data-del="${t.id}">Eliminar</button>
+        </div>`;
+      wrap.appendChild(el);
+    });
+  }
+
+  // Renderizar citas
+  function renderApptList() {
+    const wrap = $('#apptList');
+    wrap.innerHTML = '';
+    appts.forEach(a => {
+      const el = document.createElement('div');
+      el.className = 'item fadein';
+      el.innerHTML = `
+        <div>
+          <strong>${a.title}</strong>
+          <div class="meta">${a.datetime} · ${a.notes}</div>
+        </div>
+        <div class="actions">
+          <button class="iconbtn" data-edit="${a.id}">Editar</button>
+          <button class="iconbtn danger" data-del="${a.id}">Eliminar</button>
+        </div>`;
+      wrap.appendChild(el);
+    });
+  }
+
+  // Renderizar cotización
+  function renderQuote() {
+    const list = $('#quoteList');
+    list.innerHTML = '';
+    const items = services.filter(s => quoteSel.has(s.id));
+    let subtotal = 0;
+    items.forEach(s => {
+      subtotal += Number(s.price || 0);
+      const row = document.createElement('div');
+      row.className = 'item fadein';
+      row.innerHTML = `
+        <div><strong>${s.name}</strong> <span class="badge-cat">${s.cat}</span>
+          <div class="meta">${s.meta ? s.meta + ' · ' : ''}${s.desc || ''}</div>
+        </div>
+        <div class="actions">
+          <span class="price">${fmtMoney(s.price)}</span>
+          <button class="iconbtn danger" data-remove="${s.id}">Quitar</button>
+        </div>`;
+      list.appendChild(row);
+    });
+    const ivaOn = $('#quote-iva').checked;
+    const iva = ivaOn ? subtotal * 0.19 : 0;
+    const total = subtotal + iva;
+    $('#quote-total').textContent = fmtMoney(total);
+  }
+
+  // Funciones adicionales
+  $('#quote-clear').addEventListener('click', () => {
+    quoteSel.clear();
+    store.set('quoteSel', []);
+    $('#quote-notes').value = '';
+    renderServices();
+    renderQuote();
   });
-}
 
-// Renderizar tareas
-function renderTasks() {
-  const wrap = $('#taskList');
-  wrap.innerHTML = '';
-  tasks.forEach(t => {
-    const el = document.createElement('div');
-    el.className = 'item fadein';
-    el.innerHTML = `
-      <div>
-        <strong>${t.title}</strong>
-        <div class="meta">${t.due || 'Sin fecha'} · ${t.project || 'Sin proyecto'} · ${t.priority}</div>
-      </div>
-      <div class="actions">
-        <button class="iconbtn" data-edit="${t.id}">Editar</button>
-        <button class="iconbtn danger" data-del="${t.id}">Eliminar</button>
-      </div>`;
-    wrap.appendChild(el);
+  $('#quote-copy').addEventListener('click', async () => {
+    const items = services.filter(s => quoteSel.has(s.id));
+    const ivaOn = $('#quote-iva').checked;
+    const subtotal = items.reduce((a, b) => a + Number(b.price || 0), 0);
+    const iva = ivaOn ? subtotal * 0.19 : 0;
+    const total = subtotal + iva;
+    const lines = [
+      '— COTIZACIÓN —',
+      ...items.map(s => `• ${s.name} (${s.cat}) — ${fmtMoney(s.price)}${s.meta ? ' | ' + s.meta : ''}`),
+      `Subtotal: ${fmtMoney(subtotal)}`,
+      ivaOn ? `IVA (19%): ${fmtMoney(iva)}` : 'IVA: No aplica',
+      `Total: ${fmtMoney(total)}`,
+      $('#quote-notes').value ? `Notas: ${$('#quote-notes').value}` : ''
+    ].filter(Boolean).join('\n');
+    try {
+      await navigator.clipboard.writeText(lines);
+      $('#quote-copy').textContent = '¡Copiado!';
+      setTimeout(() => $('#quote-copy').textContent = 'Copiar resumen', 1200);
+    } catch { }
   });
-}
-
-// Renderizar citas
-function renderApptList() {
-  const wrap = $('#apptList');
-  wrap.innerHTML = '';
-  appts.forEach(a => {
-    const el = document.createElement('div');
-    el.className = 'item fadein';
-    el.innerHTML = `
-      <div>
-        <strong>${a.title}</strong>
-        <div class="meta">${a.datetime} · ${a.notes}</div>
-      </div>
-      <div class="actions">
-        <button class="iconbtn" data-edit="${a.id}">Editar</button>
-        <button class="iconbtn danger" data-del="${a.id}">Eliminar</button>
-      </div>`;
-    wrap.appendChild(el);
-  });
-}
-
-// Renderizar cotización
-function renderQuote() {
-  const list = $('#quoteList');
-  list.innerHTML = '';
-  const items = services.filter(s => quoteSel.has(s.id));
-  let subtotal = 0;
-  items.forEach(s => {
-    subtotal += Number(s.price || 0);
-    const row = document.createElement('div');
-    row.className = 'item fadein';
-    row.innerHTML = `
-      <div><strong>${s.name}</strong> <span class="badge-cat">${s.cat}</span>
-        <div class="meta">${s.meta ? s.meta + ' · ' : ''}${s.desc || ''}</div>
-      </div>
-      <div class="actions">
-        <span class="price">${fmtMoney(s.price)}</span>
-        <button class="iconbtn danger" data-remove="${s.id}">Quitar</button>
-      </div>`;
-    list.appendChild(row);
-  });
-  const ivaOn = $('#quote-iva').checked;
-  const iva = ivaOn ? subtotal * 0.19 : 0;
-  const total = subtotal + iva;
-  $('#quote-total').textContent = fmtMoney(total);
-}
-
-// Funciones adicionales
-$('#quote-clear').addEventListener('click', () => {
-  quoteSel.clear();
-  store.set('quoteSel', []);
-  $('#quote-notes').value = '';
-  renderServices();
-  renderQuote();
-});
-
-$('#quote-copy').addEventListener('click', async () => {
-  const items = services.filter(s => quoteSel.has(s.id));
-  const ivaOn = $('#quote-iva').checked;
-  const subtotal = items.reduce((a, b) => a + Number(b.price || 0), 0);
-  const iva = ivaOn ? subtotal * 0.19 : 0;
-  const total = subtotal + iva;
-  const lines = [
-    '— COTIZACIÓN —',
-    ...items.map(s => `• ${s.name} (${s.cat}) — ${fmtMoney(s.price)}${s.meta ? ' | ' + s.meta : ''}`),
-    `Subtotal: ${fmtMoney(subtotal)}`,
-    ivaOn ? `IVA (19%): ${fmtMoney(iva)}` : 'IVA: No aplica',
-    `Total: ${fmtMoney(total)}`,
-    $('#quote-notes').value ? `Notas: ${$('#quote-notes').value}` : ''
-  ].filter(Boolean).join('\n');
-  try {
-    await navigator.clipboard.writeText(lines);
-    $('#quote-copy').textContent = '¡Copiado!';
-    setTimeout(() => $('#quote-copy').textContent = 'Copiar resumen', 1200);
-  } catch { }
-});
-
 </script>
+
 
 </body>
 </html>
