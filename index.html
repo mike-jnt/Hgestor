@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<!-- Firebase App (necessary for Firebase SDK) -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+<!-- Firebase Firestore SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Agencia Digital — Panel, Agenda, Tareas y Servicios</title>
@@ -282,10 +287,6 @@ hr.sep{border:none;height:1px;background:#1b2030;margin:20px 0}
   </div>
 </section>
 
-<!-- Firebase App (necessary for Firebase SDK) -->
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-<!-- Firebase Firestore SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
 
 
 
@@ -881,6 +882,7 @@ $('#clearDone').onclick=()=>{ tasks = tasks.filter(t=>!t.done); store.set('tasks
     } catch { }
   });
 </script>
+
 
 
 </body>
