@@ -107,13 +107,13 @@
     <div class="brand"><span class="dot"></span> Agencia Digital</div>
     <ul>
       <li><a href="#home">Inicio</a></li>
-      <li><a href="#panel">Panel</a></li>
+      <li><a href="#panel">Panel</e></li>
       <li><a href="#servicios">Servicios</a></li>
       <li><a href="#agenda">Agenda</a></li>
       <li><a href="#tareas">Tareas</a></li>
       <li><a href="#contacto">Contacto</a></li>
 
-      <!-- Botón de login (se oculta cuando haya sesión) -->
+      <!-- Botón de login (oculto con sesión) -->
       <li><a href="#" id="openLogin">Iniciar sesión</a></li>
 
       <!-- Sección usuario logueado -->
@@ -354,26 +354,18 @@ const COP = new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maxim
 const fmtMoney = n => COP.format(n||0);
 const todayStr = ()=> new Date().toISOString().slice(0,10);
 
-/* ---------- Storage ---------- */
-const store = {
-  get(k, def){
-    try{ return JSON.parse(localStorage.getItem(k)) ?? def }
-    catch{ return def }
-  },
-  set(k, v){
-    localStorage.setItem(k, JSON.stringify(v));
-  }
-};
-let services = store.get('services', []);
-let appts    = store.get('appts', []);
-let tasks    = store.get('tasks', []);
-let quoteSel = new Set(store.get('quoteSel', []));
+/* ---------- Estado en memoria (NO localStorage, solo Firestore) ---------- */
+let services = [];
+let appts    = [];
+let tasks    = [];
+let quoteSel = new Set();
 
-/* ---------- Firebase sync helpers (definidos globalmente en módulo) ---------- */
+/* ---------- Sync con Firestore (se inyecta desde el módulo) ---------- */
 function getCurrentUser(){
   try { return localStorage.getItem('sessionUser') || null; }
   catch { return null; }
 }
+
 function syncUserState(){
   const user = getCurrentUser();
   if(user && window.saveUserState){
@@ -385,6 +377,20 @@ function syncUserState(){
     });
   }
 }
+
+/* Se llamará desde Firebase cuando cargue el estado del usuario */
+function hydrateState(state){
+  services = Array.isArray(state?.services) ? state.services : [];
+  appts    = Array.isArray(state?.appts)    ? state.appts    : [];
+  tasks    = Array.isArray(state?.tasks)    ? state.tasks    : [];
+  quoteSel = new Set(Array.isArray(state?.quoteSel) ? state.quoteSel : []);
+  renderServices();
+  renderApptList();
+  renderTasks();
+  refreshKPIs();
+  buildCalendar();
+}
+window.hydrateState = hydrateState;
 
 /* ---------- KPIs ---------- */
 function refreshKPIs(){
@@ -403,8 +409,9 @@ function refreshKPIs(){
 
 /* ---------- Servicios + Cotizador ---------- */
 function renderServices(){
-  const wrap = $('#servicesList'); wrap.innerHTML='';
-  const filter = $('#svc-filter').value;
+  const wrap = $('#servicesList'); if(!wrap) return;
+  wrap.innerHTML='';
+  const filter = $('#svc-filter')?.value || 'all';
   services
     .filter(s=> filter==='all' ? true : s.cat===filter)
     .forEach((s,i)=>{
@@ -431,24 +438,25 @@ function renderServices(){
   renderQuote();
 }
 
-$('#serviceForm').addEventListener('submit', e=>{
-  e.preventDefault();
-  const obj = {
-    id: crypto.randomUUID(),
-    name: $('#svc-name').value.trim(),
-    cat: $('#svc-cat').value,
-    price: Number($('#svc-price').value||0),
-    meta: $('#svc-meta').value.trim(),
-    desc: $('#svc-desc').value.trim(),
-  };
-  services.push(obj);
-  store.set('services', services);
-  e.target.reset();
-  renderServices();
-  syncUserState();
+document.addEventListener('submit', e=>{
+  if(e.target.id === 'serviceForm'){
+    e.preventDefault();
+    const obj = {
+      id: crypto.randomUUID(),
+      name: $('#svc-name').value.trim(),
+      cat: $('#svc-cat').value,
+      price: Number($('#svc-price').value||0),
+      meta: $('#svc-meta').value.trim(),
+      desc: $('#svc-desc').value.trim(),
+    };
+    services.push(obj);
+    e.target.reset();
+    renderServices();
+    syncUserState();
+  }
 });
 
-$('#servicesList').addEventListener('click', e=>{
+$('#servicesList')?.addEventListener('click', e=>{
   const idx = e.target.dataset.del ?? e.target.dataset.edit;
   if(idx!==undefined){
     const i = Number(idx);
@@ -456,8 +464,6 @@ $('#servicesList').addEventListener('click', e=>{
       const removedId = services[i].id;
       services.splice(i,1);
       quoteSel.delete(removedId);
-      store.set('services', services);
-      store.set('quoteSel',[...quoteSel]);
       renderServices();
       syncUserState();
     }else{
@@ -468,27 +474,26 @@ $('#servicesList').addEventListener('click', e=>{
       $('#svc-meta').value=s.meta||'';
       $('#svc-desc').value=s.desc||'';
       services.splice(i,1);
-      store.set('services', services);
       renderServices();
       syncUserState();
     }
   }
 });
 
-$('#servicesList').addEventListener('change', e=>{
+$('#servicesList')?.addEventListener('change', e=>{
   if(!e.target.dataset.select) return;
   const id = e.target.dataset.select;
   e.target.checked ? quoteSel.add(id) : quoteSel.delete(id);
-  store.set('quoteSel',[...quoteSel]);
   renderQuote();
   syncUserState();
 });
 
-$('#svc-filter').addEventListener('change', renderServices);
+$('#svc-filter')?.addEventListener('change', renderServices);
 
 /* --- Cotizador UI --- */
 function renderQuote(){
-  const list = $('#quoteList'); list.innerHTML='';
+  const list = $('#quoteList'); if(!list) return;
+  list.innerHTML='';
   const items = services.filter(s=> quoteSel.has(s.id));
   let subtotal = 0;
   items.forEach(s=>{
@@ -505,39 +510,39 @@ function renderQuote(){
       </div>`;
     list.appendChild(row);
   });
-  const ivaOn = $('#quote-iva').checked;
+  const ivaOn = $('#quote-iva')?.checked;
   const iva = ivaOn ? subtotal * 0.19 : 0;
   const total = subtotal + iva;
-  $('#quote-total').textContent = fmtMoney(total);
+  const totalEl = $('#quote-total');
+  if(totalEl) totalEl.textContent = fmtMoney(total);
 }
 
-$('#quoteList').addEventListener('click', e=>{
+$('#quoteList')?.addEventListener('click', e=>{
   const id = e.target.dataset.remove;
   if(!id) return;
   quoteSel.delete(id);
-  store.set('quoteSel',[...quoteSel]);
   renderServices();
   syncUserState();
 });
 
-$('#quote-iva').addEventListener('change', ()=>{
+$('#quote-iva')?.addEventListener('change', ()=>{
   renderQuote();
   syncUserState();
 });
 
-$('#quote-clear').addEventListener('click', ()=>{
+$('#quote-clear')?.addEventListener('click', ()=>{
   quoteSel.clear();
-  store.set('quoteSel',[]);
-  $('#quote-notes').value='';
+  const notes = $('#quote-notes');
+  if(notes) notes.value='';
   renderServices();
   renderQuote();
   syncUserState();
 });
 
 const quoteCopyBtn = $('#quote-copy');
-quoteCopyBtn.addEventListener('click', async ()=>{
+quoteCopyBtn?.addEventListener('click', async ()=>{
   const items = services.filter(s=> quoteSel.has(s.id));
-  const ivaOn = $('#quote-iva').checked;
+  const ivaOn = $('#quote-iva')?.checked;
   const subtotal = items.reduce((a,b)=>a+Number(b.price||0),0);
   const iva = ivaOn? subtotal*0.19 : 0;
   const total = subtotal + iva;
@@ -547,7 +552,7 @@ quoteCopyBtn.addEventListener('click', async ()=>{
     `Subtotal: ${fmtMoney(subtotal)}`,
     ivaOn ? `IVA (19%): ${fmtMoney(iva)}` : 'IVA: No aplica',
     `Total: ${fmtMoney(total)}`,
-    $('#quote-notes').value ? `Notas: ${$('#quote-notes').value}` : ''
+    $('#quote-notes')?.value ? `Notas: ${$('#quote-notes').value}` : ''
   ].filter(Boolean).join('\n');
   try{
     await navigator.clipboard.writeText(lines);
@@ -564,8 +569,11 @@ let calRef = new Date();
 function monthLabel(d){ return d.toLocaleDateString('es-CO',{month:'long',year:'numeric'}) }
 
 function buildCalendar(){
-  $('#calLabel').textContent = monthLabel(calRef);
-  const grid = $('#calGrid'); grid.innerHTML='';
+  const label = $('#calLabel');
+  const grid = $('#calGrid');
+  if(!label || !grid) return;
+  label.textContent = monthLabel(calRef);
+  grid.innerHTML='';
   const y=calRef.getFullYear(), m=calRef.getMonth();
   const first = new Date(y,m,1);
   const startIdx = (first.getDay()+6)%7;
@@ -584,9 +592,11 @@ function buildCalendar(){
   }
 }
 
-function renderApptList(list=appts){
-  const wrap = $('#apptList'); wrap.innerHTML='';
-  const sorted = [...list].sort((a,b)=> new Date(a.datetime)-new Date(b.datetime));
+function renderApptList(list){
+  const wrap = $('#apptList'); if(!wrap) return;
+  wrap.innerHTML='';
+  const data = list || appts;
+  const sorted = [...data].sort((a,b)=> new Date(a.datetime)-new Date(b.datetime));
   sorted.forEach((a)=>{
     const el = document.createElement('div'); el.className='item fadein';
     const when = new Date(a.datetime).toLocaleString('es-CO',{dateStyle:'medium',timeStyle:'short'});
@@ -604,26 +614,27 @@ function filterApptByDate(dateISO){
   renderApptList(filtered.length?filtered:appts);
 }
 
-$('#apptForm').addEventListener('submit', e=>{
-  e.preventDefault();
-  const obj = {
-    id: crypto.randomUUID(),
-    title: $('#appt-title').value.trim(),
-    datetime: $('#appt-datetime').value,
-    notes: $('#appt-notes').value.trim()
-  };
-  appts.push(obj);
-  store.set('appts', appts);
-  e.target.reset();
-  renderApptList();
-  syncUserState();
+document.addEventListener('submit', e=>{
+  if(e.target.id === 'apptForm'){
+    e.preventDefault();
+    const obj = {
+      id: crypto.randomUUID(),
+      title: $('#appt-title').value.trim(),
+      datetime: $('#appt-datetime').value,
+      notes: $('#appt-notes').value.trim()
+    };
+    appts.push(obj);
+    e.target.reset();
+    renderApptList();
+    syncUserState();
+  }
 });
 
-$('#apptList').addEventListener('click', e=>{
-  const id = e.target.dataset.del ?? e.target.dataset.edit; if(!id) return;
+$('#apptList')?.addEventListener('click', e=>{
+  const id = e.target.dataset.del ?? e.target.dataset.edit;
+  if(!id) return;
   if(e.target.dataset.del){
     appts = appts.filter(a=>a.id!==id);
-    store.set('appts', appts);
     renderApptList();
     syncUserState();
   } else {
@@ -632,20 +643,19 @@ $('#apptList').addEventListener('click', e=>{
     $('#appt-datetime').value=a.datetime;
     $('#appt-notes').value=a.notes||'';
     appts = appts.filter(x=>x.id!==id);
-    store.set('appts', appts);
     renderApptList();
     syncUserState();
   }
 });
 
-$('#prevMonth').onclick=()=>{
+$('#prevMonth')?.addEventListener('click', ()=>{
   calRef.setMonth(calRef.getMonth()-1);
   buildCalendar();
-};
-$('#nextMonth').onclick=()=>{
+});
+$('#nextMonth')?.addEventListener('click', ()=>{
   calRef.setMonth(calRef.getMonth()+1);
   buildCalendar();
-};
+});
 
 /* ---------- Tareas ---------- */
 function priorityRank(p){ return {Alta:0,Media:1,Baja:2}[p] ?? 1 }
@@ -658,8 +668,10 @@ function isOverdue(t){
 }
 
 function renderTasks(){
-  const wrap = $('#taskList'); wrap.innerHTML='';
-  const filter = $('#task-filter').value, sort = $('#task-sort').value;
+  const wrap = $('#taskList'); if(!wrap) return;
+  wrap.innerHTML='';
+  const filter = $('#task-filter')?.value || 'all';
+  const sort   = $('#task-sort')?.value   || 'date';
   let list = [...tasks];
 
   list = list.filter(t=>{
@@ -714,30 +726,30 @@ function renderTasks(){
   refreshKPIs();
 }
 
-$('#taskForm').addEventListener('submit', e=>{
-  e.preventDefault();
-  const obj = {
-    id: crypto.randomUUID(),
-    title: $('#task-title').value.trim(),
-    due: $('#task-due').value || null,
-    project: $('#task-project').value.trim(),
-    priority: $('#task-priority').value,
-    notes: $('#task-notes').value.trim(),
-    done:false
-  };
-  tasks.push(obj);
-  store.set('tasks', tasks);
-  e.target.reset();
-  renderTasks();
-  syncUserState();
+document.addEventListener('submit', e=>{
+  if(e.target.id === 'taskForm'){
+    e.preventDefault();
+    const obj = {
+      id: crypto.randomUUID(),
+      title: $('#task-title').value.trim(),
+      due: $('#task-due').value || null,
+      project: $('#task-project').value.trim(),
+      priority: $('#task-priority').value,
+      notes: $('#task-notes').value.trim(),
+      done:false
+    };
+    tasks.push(obj);
+    e.target.reset();
+    renderTasks();
+    syncUserState();
+  }
 });
 
-$('#taskList').addEventListener('click', e=>{
+$('#taskList')?.addEventListener('click', e=>{
   const id = e.target.dataset.del ?? e.target.dataset.edit ?? e.target.dataset.toggle;
   if(!id) return;
   if(e.target.dataset.del){
     tasks = tasks.filter(t=>t.id!==id);
-    store.set('tasks',tasks);
     renderTasks();
     syncUserState();
   }else if(e.target.dataset.edit){
@@ -748,70 +760,39 @@ $('#taskList').addEventListener('click', e=>{
     $('#task-priority').value=t.priority;
     $('#task-notes').value=t.notes||'';
     tasks = tasks.filter(x=>x.id!==id);
-    store.set('tasks',tasks);
     renderTasks();
     window.scrollTo({top: $('#tareas').offsetTop - 70, behavior:'smooth'});
     syncUserState();
   }else if(e.target.dataset.toggle){
     const t = tasks.find(x=>x.id===id);
     t.done=!t.done;
-    store.set('tasks',tasks);
     renderTasks();
     syncUserState();
   }
 });
 
-$('#task-filter').addEventListener('change', ()=>{
+$('#task-filter')?.addEventListener('change', ()=>{
   renderTasks();
 });
-$('#task-sort').addEventListener('change', ()=>{
+$('#task-sort')?.addEventListener('change', ()=>{
   renderTasks();
 });
-$('#clearDone').onclick=()=>{
+$('#clearDone')?.addEventListener('click', ()=>{
   tasks = tasks.filter(t=>!t.done);
-  store.set('tasks',tasks);
   renderTasks();
   syncUserState();
-};
+});
 
-/* ---------- Boot (demo data en COP) ---------- */
-(function init(){
-  if(services.length===0){
-    services = [
-      {id:crypto.randomUUID(),name:'Sitio web corporativo',cat:'Diseño web',price:3500000,meta:'4–6 semanas · SEO base',desc:'UI responsiva, CMS y analítica.'},
-      {id:crypto.randomUUID(),name:'Campañas Meta/Google',cat:'Publicidad digital',price:1200000,meta:'Mensual',desc:'Estrategia, creatividades y reportes.'},
-      {id:crypto.randomUUID(),name:'Mentoría de redes 1:1',cat:'Asesorías en redes',price:250000,meta:'2h · Remoto',desc:'Plan de contenidos y métricas.'},
-      {id:crypto.randomUUID(),name:'Taller Canva Pro',cat:'Capacitaciones',price:300000,meta:'3h · Grupal',desc:'Plantillas, branding y automatización.'},
-    ];
-  }
-  if(appts.length===0){
-    const d = new Date(); d.setDate(d.getDate()+2); d.setHours(10,0,0,0);
-    appts = [{
-      id:crypto.randomUUID(),
-      title:'Reunión inicial con cliente',
-      datetime:d.toISOString().slice(0,16),
-      notes:'Brief de proyecto web'
-    }];
-  }
-  if(tasks.length===0){
-    tasks = [
-      {id:crypto.randomUUID(),title:'Wireframes landing',due:todayStr(),project:'Cliente A',priority:'Alta',notes:'Secciones hero/beneficios/CTA',done:false},
-      {id:crypto.randomUUID(),title:'Calendario de contenidos',due:null,project:'RRSS',priority:'Media',notes:'30 días',done:false},
-    ];
-  }
-  store.set('services',services);
-  store.set('appts',appts);
-  store.set('tasks',tasks);
-  store.set('quoteSel',[...quoteSel]);
-
+/* ---------- Inicialización básica de UI ---------- */
+document.addEventListener('DOMContentLoaded', ()=>{
+  const yearEl = document.getElementById('year');
+  if(yearEl) yearEl.textContent = new Date().getFullYear();
   renderServices();
   renderApptList();
   renderTasks();
   refreshKPIs();
   buildCalendar();
-  $('#year').textContent = new Date().getFullYear();
-  // Si ya hay sesión y Firebase listo, se sincronizará al primer cambio
-})();
+});
 </script>
 
 <!-- ========= SCRIPT MODAL LOGIN (mike / 123456 obligatorio) ========= -->
@@ -842,6 +823,9 @@ $('#clearDone').onclick=()=>{
       if(logoutLink) logoutLink.style.display = 'inline-flex';
       if(loginModal) loginModal.style.display = 'none';
       document.body.style.overflow = 'auto';
+      if(window.loadUserState){
+        window.loadUserState(user);
+      }
     }else{
       if(openLogin) openLogin.style.display = 'none';
       if(navUser)   navUser.style.display   = 'none';
@@ -875,19 +859,11 @@ $('#clearDone').onclick=()=>{
     if(user === 'mike' && pass === '123456'){
       if(errorMsg) errorMsg.style.display = 'none';
       localStorage.setItem(SESSION_KEY, 'mike');
-      updateUI();
-      cerrarModal();
       if(window.saveUserLogin){
         window.saveUserLogin('mike');
       }
-      if(window.saveUserState){
-        window.saveUserState('mike', {
-          services,
-          appts,
-          tasks,
-          quoteSel: Array.from(quoteSel || [])
-        });
-      }
+      updateUI();
+      cerrarModal();
       alert('¡Bienvenido, Mike!');
     }else{
       if(errorMsg) errorMsg.style.display = 'block';
@@ -932,7 +908,7 @@ $('#clearDone').onclick=()=>{
 <!-- ========= FIREBASE (APP + FIRESTORE, colección users) ========= -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-  import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+  import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyATG7OT4eqF8TlzEMBEC30dN7qzwqw0GN0",
@@ -946,7 +922,14 @@ $('#clearDone').onclick=()=>{
   const app = initializeApp(firebaseConfig);
   const db  = getFirestore(app);
 
-  // Guarda o actualiza el documento del usuario en la colección "users"
+  const DEFAULT_STATE = {
+    services: [],
+    appts: [],
+    tasks: [],
+    quoteSel: []
+  };
+
+  // Guarda datos básicos de login
   window.saveUserLogin = async (username) => {
     try{
       const ref = doc(db, "users", username);
@@ -961,7 +944,7 @@ $('#clearDone').onclick=()=>{
     }
   };
 
-  // Guarda el estado completo de trabajo para ese usuario (servicios, tareas, etc)
+  // Guarda el estado completo del usuario
   window.saveUserState = async (username, state) => {
     try{
       const ref = doc(db, "users", username);
@@ -975,6 +958,44 @@ $('#clearDone').onclick=()=>{
       console.error("Error guardando estado en Firestore:", err);
     }
   };
+
+  // Carga el estado del usuario desde Firestore y lo inyecta al front
+  window.loadUserState = async (username) => {
+    try{
+      const ref = doc(db, "users", username);
+      const snap = await getDoc(ref);
+      let state;
+      if(snap.exists()){
+        const data = snap.data();
+        state = data.state || DEFAULT_STATE;
+        console.log("Estado cargado para", username, state);
+      }else{
+        state = DEFAULT_STATE;
+        await setDoc(ref, {
+          username,
+          state,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+        console.log("Doc creado por primera vez para", username);
+      }
+      if(window.hydrateState){
+        window.hydrateState(state);
+      }
+    }catch(err){
+      console.error("Error cargando estado de Firestore:", err);
+    }
+  };
+
+  // Si ya hay sesión recordada, cargar su estado al abrir
+  try{
+    const existingUser = localStorage.getItem('sessionUser');
+    if(existingUser && window.loadUserState){
+      window.loadUserState(existingUser);
+    }
+  }catch(e){
+    console.warn("No se pudo acceder a localStorage para sesión:", e);
+  }
 
   console.log("Firebase inicializado y listo.");
 </script>
