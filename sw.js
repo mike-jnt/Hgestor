@@ -11,33 +11,25 @@ const ASSETS = [
   './icons/icon-144.png',
   './icons/icon-192.png',
   './icons/icon-512.png'
-  // Si quieres, agrega más archivos estáticos (CSS propios, imágenes, etc.)
+  // Agrega aquí más archivos estáticos si quieres
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(ASSETS);
-    })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
   );
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
-        keys
-          .filter(k => k !== CACHE_NAME)
-          .map(k => caches.delete(k))
-      );
-    })
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+    )
   );
 });
 
 self.addEventListener('fetch', (event) => {
   const { request } = event;
-
-  // Estrategia: cache first para GET, network para lo demás (Firestore, etc.)
   if (request.method !== 'GET') return;
 
   event.respondWith(
