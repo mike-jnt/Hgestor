@@ -4,6 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Agencia Digital — Panel, Agenda, Tareas y Servicios</title>
+  <link rel="manifest" href="manifest.webmanifest">
+
 
   <style>
   :root{
@@ -1653,6 +1655,17 @@ document.addEventListener('DOMContentLoaded', ()=>{
   console.log("Firebase inicializado y listo (multiusuario con registro).");
 </script>
 <!-- ========= FIN FIREBASE ========= -->
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('Service Worker registrado:', reg.scope))
+      .catch(err => console.error('Error al registrar Service Worker:', err));
+  });
+}
+</script>
+
 
 </body>
 </html>
