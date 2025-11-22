@@ -59,6 +59,16 @@
   .kpi{padding:16px;border-radius:14px;background:linear-gradient(180deg,#121623,#101420)}
   .kpi small{color:var(--muted)} .kpi h3{margin:6px 0 0;font-size:24px} .kpi .tag{font-size:12px;color:#9aa1b5;background:#171c2a;border:1px solid #232a3f;padding:4px 8px;border-radius:999px}
 
+  /* Alerts / Dashboard */
+  .alerts{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px}
+  .alert-pill{
+    padding:6px 10px;border-radius:999px;font-size:13px;display:inline-flex;align-items:center;gap:6px;
+    border:1px solid #28314a;background:#151822;color:#dbe4ff;
+  }
+  .alert-pill.ok{background:#0f1713;border-color:#264031;color:#a9f5c7}
+  .alert-pill.warn{background:#18140b;border-color:#4a3b1a;color:#ffe3a0}
+  .alert-pill.danger{background:#1b1012;border-color:#4b222b;color:#ffb3c1}
+
   /* Forms */
   .input, select, textarea{width:100%; background:#111521; color:var(--text); border:1px solid #202636; border-radius:12px; padding:12px 12px; outline:none}
   .input::placeholder, textarea::placeholder{color:#6e7589}
@@ -149,10 +159,92 @@
 <section id="panel" class="section container">
   <h2>Panel de control</h2>
   <p class="lead">Resumen operativo: tareas, citas y catálogo.</p>
+
+  <!-- Alertas globales -->
+  <div id="globalAlerts" class="alerts"></div>
+
   <div class="grid-3">
-    <div class="card kpi"><small>Tareas pendientes</small><h3 id="kpi-tareas">0</h3><span class="tag">estado</span></div>
-    <div class="card kpi"><small>Próximos compromisos</small><h3 id="kpi-citas">0</h3><span class="tag">7 días</span></div>
-    <div class="card kpi"><small>Servicios activos</small><h3 id="kpi-servicios">0</h3><span class="tag">catálogo</span></div>
+    <div class="card kpi">
+      <small>Tareas pendientes</small>
+      <h3 id="kpi-tareas">0</h3>
+      <span class="tag">estado</span>
+    </div>
+    <div class="card kpi">
+      <small>Próximos compromisos</small>
+      <h3 id="kpi-citas">0</h3>
+      <span class="tag">7 días</span>
+    </div>
+    <div class="card kpi">
+      <small>Servicios activos</small>
+      <h3 id="kpi-servicios">0</h3>
+      <span class="tag">catálogo</span>
+    </div>
+  </div>
+
+  <!-- Dashboard de métricas -->
+  <div class="grid-2" style="margin-top:16px">
+    <div class="card pad">
+      <h3 style="margin-top:0;font-size:16px">Métricas de servicios</h3>
+      <p class="lead" style="margin-top:4px">Panorama rápido del catálogo y su valor estimado.</p>
+      <div class="list">
+        <div class="item" style="padding:10px 12px;">
+          <div>
+            <strong>Valor total del catálogo</strong>
+            <div class="meta">Suma de todos los servicios activos.</div>
+          </div>
+          <div class="price" id="metric-servicios-total">—</div>
+        </div>
+        <div class="item" style="padding:10px 12px;">
+          <div>
+            <strong>Ticket promedio</strong>
+            <div class="meta">Promedio por servicio registrado.</div>
+          </div>
+          <div class="price" id="metric-servicios-promedio">—</div>
+        </div>
+        <div class="item" style="padding:10px 12px;">
+          <div>
+            <strong>Categoría más frecuente</strong>
+            <div class="meta">Tipo de servicio más utilizado.</div>
+          </div>
+          <div class="price" id="metric-servicios-topcat">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card pad">
+      <h3 style="margin-top:0;font-size:16px">Métricas de agenda y tareas</h3>
+      <p class="lead" style="margin-top:4px">Visibilidad de carga de trabajo inmediata.</p>
+      <div class="list">
+        <div class="item" style="padding:10px 12px;">
+          <div>
+            <strong>Citas para hoy</strong>
+            <div class="meta">Compromisos agendados en la fecha actual.</div>
+          </div>
+          <div class="price" id="metric-citas-hoy">0</div>
+        </div>
+        <div class="item" style="padding:10px 12px;">
+          <div>
+            <strong>Citas próximos 7 días</strong>
+            <div class="meta">Incluye hoy y la próxima semana.</div>
+          </div>
+          <div class="price" id="metric-citas-semana">0</div>
+        </div>
+        <div class="item" style="padding:10px 12px;">
+          <div>
+            <strong>Tareas que vencen hoy</strong>
+            <div class="meta">Pendientes con fecha límite para hoy.</div>
+          </div>
+          <div class="price" id="metric-tareas-hoy">0</div>
+        </div>
+        <div class="item" style="padding:10px 12px;">
+          <div>
+            <strong>Tareas vencidas</strong>
+            <div class="meta">Pendientes cuyo plazo ya pasó.</div>
+          </div>
+          <div class="price" id="metric-tareas-vencidas">0</div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -209,17 +301,42 @@
       <strong>Cotizador</strong>
       <p class="meta" style="color:#aab1c6">Selecciona servicios del listado (checkbox) y aquí verás el detalle y el total.</p>
       <div class="list" id="quoteList"></div>
+
       <div class="row" style="margin-top:10px">
         <div>
-          <label><input type="checkbox" id="quote-iva" /> Incluir IVA (19%)</label>
+          <label>Cliente / proyecto</label>
+          <input id="quote-client" class="input" placeholder="Nombre del cliente o proyecto" />
         </div>
         <div>
           <label>Notas de la cotización</label>
           <input id="quote-notes" class="input" placeholder="Condiciones, alcance, tiempos..." />
         </div>
       </div>
-      <div style="display:flex;justify-content:flex-end;gap:14px;margin-top:12px;align-items:baseline">
-        <div><strong>Total:</strong> <span id="quote-total" style="font-size:18px"></span></div>
+
+      <div class="row" style="margin-top:10px">
+        <div>
+          <label><input type="checkbox" id="quote-iva" /> Incluir IVA (19%)</label>
+        </div>
+        <div>
+          <label>Descuento (%)</label>
+          <input id="quote-discount" type="number" min="0" max="100" step="1" class="input" placeholder="0" />
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <div>
+          <label>Vigencia de la oferta (días)</label>
+          <input id="quote-valid" type="number" min="0" step="1" class="input" placeholder="15" />
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:14px;margin-top:12px;align-items:flex-end;flex-wrap:wrap">
+        <div style="text-align:right;min-width:220px">
+          <div style="font-size:13px;color:#aab1c6">Subtotal: <span id="quote-subtotal"></span></div>
+          <div style="font-size:13px;color:#aab1c6">Descuento: <span id="quote-discount-amount"></span></div>
+          <div style="font-size:13px;color:#aab1c6">IVA: <span id="quote-iva-amount"></span></div>
+          <div style="margin-top:4px"><strong>Total:</strong> <span id="quote-total" style="font-size:18px"></span></div>
+        </div>
         <button class="iconbtn" id="quote-copy" type="button">Copiar resumen</button>
         <button class="iconbtn danger" id="quote-clear" type="button">Limpiar cotización</button>
       </div>
@@ -397,14 +514,22 @@ const $$ = (q,root=document)=>Array.from(root.querySelectorAll(q));
 const COP = new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0});
 const fmtMoney = n => COP.format(n||0);
 const todayStr = ()=> new Date().toISOString().slice(0,10);
+const LS_PREFIX = 'agencyState_';
 
-/* ---------- Estado en memoria (solo Firestore) ---------- */
+/* ---------- Estado en memoria (local + Firestore) ---------- */
 let services = [];
 let appts    = [];
 let tasks    = [];
 let quoteSel = new Set();
+let quoteConfig = {
+  iva: false,
+  notes: '',
+  client: '',
+  discount: 0,
+  validDays: ''
+};
 
-/* ---------- Sync con Firestore ---------- */
+/* ---------- Sync con localStorage + Firestore ---------- */
 function getCurrentUser(){
   try { return localStorage.getItem('sessionUser') || null; }
   catch { return null; }
@@ -412,13 +537,26 @@ function getCurrentUser(){
 
 function syncUserState(){
   const user = getCurrentUser();
+  const state = {
+    services,
+    appts,
+    tasks,
+    quoteSel: Array.from(quoteSel || []),
+    quoteConfig
+  };
+
+  // Guardar siempre en localStorage si hay usuario
+  if(user){
+    try{
+      localStorage.setItem(LS_PREFIX + user, JSON.stringify(state));
+    }catch(e){
+      console.warn('No se pudo guardar estado en localStorage:', e);
+    }
+  }
+
+  // Enviar a Firestore si la función está disponible
   if(user && window.saveUserState){
-    window.saveUserState(user, {
-      services,
-      appts,
-      tasks,
-      quoteSel: Array.from(quoteSel || [])
-    });
+    window.saveUserState(user, state);
   }
 }
 
@@ -427,27 +565,132 @@ function hydrateState(state){
   appts    = Array.isArray(state?.appts)    ? state.appts    : [];
   tasks    = Array.isArray(state?.tasks)    ? state.tasks    : [];
   quoteSel = new Set(Array.isArray(state?.quoteSel) ? state.quoteSel : []);
+  quoteConfig = state?.quoteConfig || {
+    iva:false,
+    notes:'',
+    client:'',
+    discount:0,
+    validDays:''
+  };
+
+  // Reflejar configuración del cotizador en UI
+  const ivaChk = $('#quote-iva');
+  if(ivaChk) ivaChk.checked = !!quoteConfig.iva;
+  if($('#quote-notes'))   $('#quote-notes').value   = quoteConfig.notes || '';
+  if($('#quote-client'))  $('#quote-client').value  = quoteConfig.client || '';
+  if($('#quote-discount'))$('#quote-discount').value= quoteConfig.discount ?? '';
+  if($('#quote-valid'))   $('#quote-valid').value   = quoteConfig.validDays ?? '';
+
   renderServices();
   renderApptList();
   renderTasks();
   refreshKPIs();
   buildCalendar();
+
+  // Guardar también en localStorage al hidratar
+  const user = getCurrentUser();
+  if(user){
+    try{
+      localStorage.setItem(LS_PREFIX + user, JSON.stringify({
+        services,
+        appts,
+        tasks,
+        quoteSel: Array.from(quoteSel),
+        quoteConfig
+      }));
+    }catch(e){
+      console.warn('No se pudo persistir estado hidratado en localStorage:', e);
+    }
+  }
 }
 window.hydrateState = hydrateState;
 
-/* ---------- KPIs ---------- */
+/* ---------- KPIs + Métricas + Alertas ---------- */
+function refreshMetrics(){
+  // Servicios
+  const totalServicesValue = services.reduce((acc,s)=>acc+Number(s.price||0),0);
+  const avgPrice = services.length ? totalServicesValue / services.length : 0;
+  const byCat = services.reduce((acc,s)=>{
+    if(!s.cat) return acc;
+    acc[s.cat] = (acc[s.cat]||0)+1;
+    return acc;
+  },{});
+  const topCat = Object.entries(byCat).sort((a,b)=>b[1]-a[1])[0]?.[0] || 'Sin datos';
+
+  const elTotal = $('#metric-servicios-total');
+  if(elTotal) elTotal.textContent = fmtMoney(totalServicesValue);
+  const elAvg = $('#metric-servicios-promedio');
+  if(elAvg) elAvg.textContent = avgPrice ? fmtMoney(avgPrice) : '—';
+  const elTopCat = $('#metric-servicios-topcat');
+  if(elTopCat) elTopCat.textContent = topCat;
+
+  // Agenda y tareas
+  const now = new Date();
+  const todayISO = todayStr();
+  const weekEnd = new Date();
+  weekEnd.setDate(now.getDate()+7);
+
+  const apptsToday = appts.filter(a=> a.datetime && a.datetime.slice(0,10)===todayISO).length;
+  const apptsWeek  = appts.filter(a=>{
+    if(!a.datetime) return false;
+    const d = new Date(a.datetime);
+    return d>=now && d<=weekEnd;
+  }).length;
+  const overdue = tasks.filter(isOverdue).length;
+  const dueToday = tasks.filter(t=> t.due===todayISO && !t.done).length;
+
+  const mCH = $('#metric-citas-hoy'); if(mCH) mCH.textContent = apptsToday;
+  const mCW = $('#metric-citas-semana'); if(mCW) mCW.textContent = apptsWeek;
+  const mTH = $('#metric-tareas-hoy'); if(mTH) mTH.textContent = dueToday;
+  const mTV = $('#metric-tareas-vencidas'); if(mTV) mTV.textContent = overdue;
+
+  refreshAlerts({apptsToday,apptsWeek,overdue,dueToday});
+}
+
+function refreshAlerts({apptsToday,apptsWeek,overdue,dueToday}={}){
+  const wrap = $('#globalAlerts'); if(!wrap) return;
+  wrap.innerHTML = '';
+
+  const pills = [];
+
+  if(overdue>0){
+    pills.push({type:'danger',text:`${overdue} tarea(s) vencida(s). Revisa el área de tareas.`});
+  }
+  if(dueToday>0){
+    pills.push({type:'warn',text:`${dueToday} tarea(s) vencen hoy.`});
+  }
+  if(apptsToday>0){
+    pills.push({type:'warn',text:`${apptsToday} cita(s) programada(s) para hoy.`});
+  }else if(apptsWeek>0){
+    pills.push({type:'ok',text:`${apptsWeek} cita(s) en los próximos 7 días.`});
+  }
+
+  if(!pills.length){
+    pills.push({type:'ok',text:'Todo en orden por ahora. Sin citas ni tareas críticas.'});
+  }
+
+  pills.forEach(p=>{
+    const el = document.createElement('div');
+    el.className = `alert-pill ${p.type}`;
+    el.textContent = p.text;
+    wrap.appendChild(el);
+  });
+}
+
 function refreshKPIs(){
   const pending = tasks.filter(t=>!t.done).length;
   const weekFrom = new Date();
   const weekTo = new Date();
   weekTo.setDate(weekTo.getDate()+7);
   const upcoming = appts.filter(a=>{
+    if(!a.datetime) return false;
     const d=new Date(a.datetime);
-    return d>=weekFrom && d<=weekTo
+    return d>=weekFrom && d<=weekTo;
   }).length;
   $('#kpi-tareas').textContent = pending;
   $('#kpi-citas').textContent = upcoming;
   $('#kpi-servicios').textContent = services.length;
+  refreshMetrics();
 }
 
 /* ---------- Servicios + Cotizador ---------- */
@@ -553,10 +796,22 @@ function renderQuote(){
       </div>`;
     list.appendChild(row);
   });
-  const ivaOn = $('#quote-iva')?.checked;
-  const iva = ivaOn ? subtotal * 0.19 : 0;
-  const total = subtotal + iva;
+
+  const discountPct = Number(quoteConfig.discount || 0);
+  const discount = subtotal * (isNaN(discountPct)?0:discountPct/100);
+  const base = subtotal - discount;
+  const ivaOn = !!quoteConfig.iva;
+  const iva = ivaOn ? base * 0.19 : 0;
+  const total = base + iva;
+
+  const subtotalEl = $('#quote-subtotal');
+  const discountEl = $('#quote-discount-amount');
+  const ivaEl = $('#quote-iva-amount');
   const totalEl = $('#quote-total');
+
+  if(subtotalEl) subtotalEl.textContent = fmtMoney(subtotal);
+  if(discountEl) discountEl.textContent = discount>0 ? `- ${fmtMoney(discount)}` : fmtMoney(0);
+  if(ivaEl) ivaEl.textContent = ivaOn ? fmtMoney(iva) : 'No aplica';
   if(totalEl) totalEl.textContent = fmtMoney(total);
 }
 
@@ -568,15 +823,41 @@ $('#quoteList')?.addEventListener('click', e=>{
   syncUserState();
 });
 
-$('#quote-iva')?.addEventListener('change', ()=>{
+$('#quote-iva')?.addEventListener('change', (e)=>{
+  quoteConfig.iva = e.target.checked;
   renderQuote();
+  syncUserState();
+});
+
+$('#quote-notes')?.addEventListener('input', (e)=>{
+  quoteConfig.notes = e.target.value;
+  syncUserState();
+});
+$('#quote-client')?.addEventListener('input', (e)=>{
+  quoteConfig.client = e.target.value;
+  syncUserState();
+});
+$('#quote-discount')?.addEventListener('input', (e)=>{
+  const v = Number(e.target.value || 0);
+  quoteConfig.discount = isNaN(v)?0:v;
+  renderQuote();
+  syncUserState();
+});
+$('#quote-valid')?.addEventListener('input', (e)=>{
+  quoteConfig.validDays = e.target.value;
   syncUserState();
 });
 
 $('#quote-clear')?.addEventListener('click', ()=>{
   quoteSel.clear();
-  const notes = $('#quote-notes');
-  if(notes) notes.value='';
+  quoteConfig = { iva:false, notes:'', client:'', discount:0, validDays:'' };
+
+  if($('#quote-iva')) $('#quote-iva').checked = false;
+  if($('#quote-notes')) $('#quote-notes').value = '';
+  if($('#quote-client')) $('#quote-client').value = '';
+  if($('#quote-discount')) $('#quote-discount').value = '';
+  if($('#quote-valid')) $('#quote-valid').value = '';
+
   renderServices();
   renderQuote();
   syncUserState();
@@ -585,18 +866,30 @@ $('#quote-clear')?.addEventListener('click', ()=>{
 const quoteCopyBtn = $('#quote-copy');
 quoteCopyBtn?.addEventListener('click', async ()=>{
   const items = services.filter(s=> quoteSel.has(s.id));
-  const ivaOn = $('#quote-iva')?.checked;
   const subtotal = items.reduce((a,b)=>a+Number(b.price||0),0);
-  const iva = ivaOn? subtotal*0.19 : 0;
-  const total = subtotal + iva;
+
+  const discountPct = Number(quoteConfig.discount || 0);
+  const discount = subtotal * (isNaN(discountPct)?0:discountPct/100);
+  const base = subtotal - discount;
+  const ivaOn = !!quoteConfig.iva;
+  const iva = ivaOn ? base * 0.19 : 0;
+  const total = base + iva;
+
   const lines = [
     '— COTIZACIÓN —',
+    `Fecha: ${new Date().toLocaleString('es-CO')}`,
+    quoteConfig.client ? `Cliente: ${quoteConfig.client}` : '',
+    '',
     ...items.map(s=>`• ${s.name} (${s.cat}) — ${fmtMoney(s.price)}${s.meta? ' | '+s.meta:''}`),
+    '',
     `Subtotal: ${fmtMoney(subtotal)}`,
+    discount>0 ? `Descuento (${discountPct}%): -${fmtMoney(discount)}` : 'Descuento: 0',
     ivaOn ? `IVA (19%): ${fmtMoney(iva)}` : 'IVA: No aplica',
-    `Total: ${fmtMoney(total)}`,
-    $('#quote-notes')?.value ? `Notas: ${$('#quote-notes').value}` : ''
+    `TOTAL: ${fmtMoney(total)}`,
+    quoteConfig.validDays ? `Vigencia de la oferta: ${quoteConfig.validDays} día(s)` : '',
+    quoteConfig.notes ? `Notas: ${quoteConfig.notes}` : ''
   ].filter(Boolean).join('\n');
+
   try{
     await navigator.clipboard.writeText(lines);
     const old = quoteCopyBtn.textContent;
@@ -628,7 +921,7 @@ function buildCalendar(){
     const cell=document.createElement('div'); cell.className='cal-cell';
     const dateISO = new Date(y,m,d).toISOString().slice(0,10);
     cell.dataset.date = dateISO;
-    const dots = appts.some(a=>a.datetime.startsWith(dateISO)) ? '<span class="dot"></span>' : '';
+    const dots = appts.some(a=>a.datetime && a.datetime.startsWith(dateISO)) ? '<span class="dot"></span>' : '';
     cell.innerHTML = `<span class="d">${d}</span><div style="margin-top:22px">${dots}</div>`;
     cell.addEventListener('click',()=> filterApptByDate(dateISO));
     grid.appendChild(cell);
@@ -642,9 +935,11 @@ function renderApptList(list){
   const sorted = [...data].sort((a,b)=> new Date(a.datetime)-new Date(b.datetime));
   sorted.forEach((a)=>{
     const el = document.createElement('div'); el.className='item fadein';
-    const when = new Date(a.datetime).toLocaleString('es-CO',{dateStyle:'medium',timeStyle:'short'});
+    const whenTxt = a.datetime
+      ? new Date(a.datetime).toLocaleString('es-CO',{dateStyle:'medium',timeStyle:'short'})
+      : 'Sin fecha';
     el.innerHTML = `
-      <div><strong>${a.title}</strong><div class="meta">${when}${a.notes? ' · '+a.notes:''}</div></div>
+      <div><strong>${a.title}</strong><div class="meta">${whenTxt}${a.notes? ' · '+a.notes:''}</div></div>
       <div class="actions"><button class="iconbtn" data-edit="${a.id}">Editar</button><button class="iconbtn danger" data-del="${a.id}">Eliminar</button></div>`;
     wrap.appendChild(el);
   });
@@ -653,7 +948,7 @@ function renderApptList(list){
 }
 
 function filterApptByDate(dateISO){
-  const filtered = appts.filter(a=>a.datetime.startsWith(dateISO));
+  const filtered = appts.filter(a=>a.datetime && a.datetime.startsWith(dateISO));
   renderApptList(filtered.length?filtered:appts);
 }
 
@@ -830,6 +1125,25 @@ $('#clearDone')?.addEventListener('click', ()=>{
 document.addEventListener('DOMContentLoaded', ()=>{
   const yearEl = document.getElementById('year');
   if(yearEl) yearEl.textContent = new Date().getFullYear();
+
+  // Si hay usuario en sesión, intentar hidratar primero desde localStorage para carga rápida
+  try{
+    const user = getCurrentUser();
+    if(user){
+      const raw = localStorage.getItem(LS_PREFIX + user);
+      if(raw){
+        const state = JSON.parse(raw);
+        if(window.hydrateState){
+          window.hydrateState(state);
+          return; // ya renderizó todo
+        }
+      }
+    }
+  }catch(e){
+    console.warn('No se pudo leer estado de localStorage en inicio:', e);
+  }
+
+  // Fallback: estado vacío
   renderServices();
   renderApptList();
   renderTasks();
@@ -1097,7 +1411,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
     services: [],
     appts: [],
     tasks: [],
-    quoteSel: []
+    quoteSel: [],
+    quoteConfig: {
+      iva:false,
+      notes:'',
+      client:'',
+      discount:0,
+      validDays:''
+    }
   };
 
   // REGISTRO: crea un nuevo doc de usuario con contraseña y estado inicial
