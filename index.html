@@ -169,6 +169,13 @@
       <div class="cta">
         <a class="btn" href="#agenda">Agenda tu asesoría</a>
         <a class="btn secondary" href="#servicios">Solicita tu cotización</a>
+        <!-- NUEVO BOTÓN: instalar app -->
+        <button id="installAppBtn"
+                class="btn secondary"
+                type="button"
+                style="display:none;">
+          Descargar / instalar app
+        </button>
       </div>
     </div>
     <div class="card" style="display:flex;align-items:center;justify-content:center;min-height:220px;background:linear-gradient(180deg,#0f1320,#0b0f19)">
@@ -1666,6 +1673,35 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 
+<!-- ========= BOTÓN INSTALAR APP (PWA) ========= -->
+<script>
+let deferredPrompt = null;
+const installBtn = document.getElementById('installAppBtn');
+
+// El navegador avisa cuando la PWA es instalable
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();          // evitamos el prompt automático
+  deferredPrompt = e;          // guardamos el evento
+  if (installBtn) {
+    installBtn.style.display = 'inline-flex';  // mostramos el botón
+  }
+});
+
+// Cuando el usuario hace clic en "Descargar / instalar app"
+if (installBtn) {
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();   // mostramos el cuadro de instalación
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log('Resultado de instalación:', outcome);
+
+    deferredPrompt = null;
+    installBtn.style.display = 'none'; // ocultamos el botón tras el intento
+  });
+}
+</script>
+<!-- ========= FIN BOTÓN INSTALAR APP ========= -->
 
 </body>
 </html>
