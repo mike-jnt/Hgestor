@@ -4,8 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Agencia Digital — Panel, Agenda, Tareas y Servicios</title>
-  <link rel="manifest" href="manifest.webmanifest">
-
 
   <style>
   :root{
@@ -13,130 +11,268 @@
     --brand:#5ea1ff; --brand-2:#6ee7f3; --ok:#46d39a; --warn:#ffd166; --danger:#ff6b6b;
     --radius:16px; --shadow: 0 10px 30px rgba(0,0,0,.35);
   }
-  *{box-sizing:border-box} html,body{height:100%} body{
-    margin:0;background: radial-gradient(1200px 600px at 80% -10%,rgba(94,161,255,.15),transparent),
-    radial-gradient(900px 500px at -10% 10%,rgba(110,231,243,.10),transparent), var(--bg);
-    color:var(--text); font:16px/1.5 Inter, ui-sans-serif, system-ui,-apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 80% -10%,rgba(94,161,255,.15),transparent),
+      radial-gradient(900px 500px at -10% 10%,rgba(110,231,243,.10),transparent),
+      var(--bg);
+    color:var(--text);
+    font:16px/1.5 Inter, ui-sans-serif, system-ui,-apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
   }
-  a{color:inherit;text-decoration:none} button{cursor:pointer}
-  .container{max-width:1200px;margin:0 auto;padding:0 20px}
+  a{color:inherit;text-decoration:none}
+  button{cursor:pointer}
+  .container{max-width:1200px;margin:0 auto;padding:0 16px}
 
   /* NAV */
-  .nav{position:sticky; top:0; z-index:5; backdrop-filter: blur(8px);
-    background: linear-gradient(180deg, rgba(11,12,16,.85), rgba(11,12,16,.55)); border-bottom:1px solid #1f2330}
-  .nav .wrap{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:700}
-  .brand .dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(45deg,var(--brand),var(--brand-2))}
-  .nav ul{display:flex;gap:18px;list-style:none;margin:0;padding:0;align-items:center}
-  .nav a{padding:8px 12px;border-radius:10px;color:var(--muted)}
+  .nav{
+    position:sticky; top:0; z-index:5;
+    backdrop-filter: blur(8px);
+    background: linear-gradient(180deg, rgba(11,12,16,.95), rgba(11,12,16,.72));
+    border-bottom:1px solid #1f2330;
+  }
+  .nav .wrap{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 0;
+  }
+  .brand{
+    display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;
+  }
+  .brand .dot{
+    width:10px;height:10px;border-radius:50%;
+    background:linear-gradient(45deg,var(--brand),var(--brand-2));
+  }
+  .nav ul{
+    display:flex;gap:12px;list-style:none;margin:0;padding:0;align-items:center;
+  }
+  .nav a{
+    padding:8px 10px;border-radius:10px;color:var(--muted);font-size:14px;
+  }
   .nav a:hover{background:#171923;color:var(--text)}
+
+  /* Hamburguesa */
+  .nav-toggle{
+    display:none;
+    background:none;
+    border:none;
+    font-size:22px;
+    padding:6px 10px;
+    border-radius:10px;
+    color:var(--text);
+  }
+  .nav-toggle:active{transform:scale(.96);}
 
   /* HERO */
   .hero{padding:70px 0 32px}
-  .hero .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:28px}
-  .hero .card{background:linear-gradient(180deg,#10121a,#0f1218);border:1px solid #1c2030;border-radius:24px;padding:28px;box-shadow:var(--shadow)}
-  .hero h1{font-size:38px;line-height:1.15;margin:0 0 10px}
+  .hero .grid{
+    display:grid;grid-template-columns:1.2fr .8fr;gap:28px;
+  }
+  .hero .card{
+    background:linear-gradient(180deg,#10121a,#0f1218);
+    border:1px solid #1c2030;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:var(--shadow);
+  }
+  .hero h1{
+    font-size:38px;line-height:1.15;margin:0 0 10px;
+  }
   .hero p{color:var(--muted);margin:0 0 22px}
   .cta{display:flex;gap:12px;flex-wrap:wrap}
   .btn{
-    background:linear-gradient(90deg,var(--brand),var(--brand-2)); color:#081018;font-weight:700;border:none;border-radius:12px;padding:12px 18px;
-    transition:transform .15s ease, box-shadow .2s ease; box-shadow:0 8px 26px rgba(94,161,255,.25);
+    background:linear-gradient(90deg,var(--brand),var(--brand-2));
+    color:#081018;font-weight:700;border:none;border-radius:12px;
+    padding:10px 16px;
+    transition:transform .15s ease, box-shadow .2s ease;
+    box-shadow:0 8px 26px rgba(94,161,255,.25);
+    font-size:14px;
   }
   .btn:hover{transform:translateY(-1px)}
-  .btn.secondary{background:#171b25;color:var(--text);border:1px solid #242938;box-shadow:none}
-  .badge{display:inline-flex;align-items:center;gap:8px;background:#121520;border:1px solid #23283a;padding:8px 12px;border-radius:999px;color:#8b90a0;font-size:13px}
+  .btn.secondary{
+    background:#171b25;color:var(--text);
+    border:1px solid #242938;box-shadow:none;
+  }
+  .badge{
+    display:inline-flex;align-items:center;gap:8px;
+    background:#121520;border:1px solid #23283a;
+    padding:6px 10px;border-radius:999px;
+    color:#8b90a0;font-size:12px;
+  }
 
   /* Sections */
-  .section{padding:28px 0 18px} .section h2{margin:8px 0 14px;font-size:22px}
-  .section p.lead{color:var(--muted);margin:-6px 0 14px}
+  .section{padding:28px 0 18px}
+  .section h2{margin:8px 0 14px;font-size:22px}
+  .section p.lead{color:var(--muted);margin:-6px 0 14px;font-size:14px}
 
   /* Cards & layout */
-  .card{background:var(--card);border:1px solid #1e2231;border-radius:var(--radius);box-shadow:var(--shadow)}
-  .card.pad{padding:18px} .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .card{
+    background:var(--card);border:1px solid #1e2231;
+    border-radius:var(--radius);box-shadow:var(--shadow);
+  }
+  .card.pad{padding:16px}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
   .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  @media (max-width:980px){.hero .grid{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr 1fr}}
-  @media (max-width:680px){.grid-3,.grid-2{grid-template-columns:1fr}}
 
   /* KPI */
-  .kpi{padding:16px;border-radius:14px;background:linear-gradient(180deg,#121623,#101420)}
-  .kpi small{color:var(--muted)} .kpi h3{margin:6px 0 0;font-size:24px} .kpi .tag{font-size:12px;color:#9aa1b5;background:#171c2a;border:1px solid #232a3f;padding:4px 8px;border-radius:999px}
-
-  /* Alerts / Dashboard */
-  .alerts{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px}
-  .alert-pill{
-    padding:6px 10px;border-radius:999px;font-size:13px;display:inline-flex;align-items:center;gap:6px;
-    border:1px solid #28314a;background:#151822;color:#dbe4ff;
-  }
-  .alert-pill.ok{background:#0f1713;border-color:#264031;color:#a9f5c7}
-  .alert-pill.warn{background:#18140b;border-color:#4a3b1a;color:#ffe3a0}
-  .alert-pill.danger{background:#1b1012;border-color:#4b222b;color:#ffb3c1}
-
-  /* Charts */
-  .chart-wrap{
-    margin-top:14px;
-    padding:10px 12px;
-    border-radius:14px;
-    border:1px solid #23283a;
-    background:radial-gradient(circle at 0 0,rgba(94,161,255,.13),transparent),#0b0d16;
-  }
-  .chart-wrap .meta{
-    font-size:12px;
-    color:#8b90a0;
-    margin-bottom:6px;
-  }
-  .chart-wrap canvas{
-    width:100%;
-    height:180px;
-    display:block;
+  .kpi{padding:14px;border-radius:14px;
+    background:linear-gradient(180deg,#121623,#101420)}
+  .kpi small{color:var(--muted);font-size:12px}
+  .kpi h3{margin:6px 0 0;font-size:22px}
+  .kpi .tag{
+    font-size:11px;color:#9aa1b5;background:#171c2a;
+    border:1px solid #232a3f;padding:3px 7px;border-radius:999px;
   }
 
   /* Forms */
-  .input, select, textarea{width:100%; background:#111521; color:var(--text); border:1px solid #202636; border-radius:12px; padding:12px 12px; outline:none}
+  .input, select, textarea{
+    width:100%; background:#111521; color:var(--text);
+    border:1px solid #202636; border-radius:12px;
+    padding:10px 11px; outline:none;font-size:14px;
+  }
   .input::placeholder, textarea::placeholder{color:#6e7589}
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  @media (max-width:700px){.row{grid-template-columns:1fr}}
-  label{display:block;margin:6px 0 8px;color:#aab1c6;font-size:13px}
-  .actions{display:flex;gap:10px;flex-wrap:wrap}
-  .iconbtn{background:#151a27;border:1px solid #232a3f;color:#d9dff2;border-radius:12px;padding:10px 12px}
-  .iconbtn.danger{border-color:#3a2227;color:#ffb3b3;background:#1a1012}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  label{
+    display:block;margin:6px 0 6px;
+    color:#aab1c6;font-size:12px;
+  }
+  .actions{display:flex;gap:8px;flex-wrap:wrap}
+  .iconbtn{
+    background:#151a27;border:1px solid #232a3f;
+    color:#d9dff2;border-radius:12px;
+    padding:8px 10px;
+    font-size:13px;
+  }
+  .iconbtn.danger{
+    border-color:#3a2227;color:#ffb3b3;background:#1a1012;
+  }
 
   /* Lists & tables */
-  .list{display:grid;gap:10px;margin-top:12px}
+  .list{display:grid;gap:8px;margin-top:10px}
   .item{
-    display:grid;gap:10px;grid-template-columns:1fr auto;align-items:center;padding:12px 12px;
+    display:grid;gap:10px;grid-template-columns:1fr auto;
+    align-items:center;padding:10px 10px;
     border:1px solid #222739;border-radius:14px;background:#0f121a;
   }
-  .item .meta{color:var(--muted);font-size:13px}
-  .badge-cat{font-size:12px;padding:4px 8px;border-radius:999px;border:1px solid #28314a;background:#151a26;color:#b3c9ff}
-  .price{font-weight:700;color:#d8e4ff}
+  .item .meta{color:var(--muted);font-size:12px}
+  .badge-cat{
+    font-size:11px;padding:3px 7px;border-radius:999px;
+    border:1px solid #28314a;background:#151a26;color:#b3c9ff;
+  }
+  .price{font-weight:700;color:#d8e4ff;font-size:14px}
 
   /* Calendar */
-  .calendar{padding:12px}
-  .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-  .cal-head .month{font-weight:700}
-  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;font-size:13px}
-  .cal-cell{min-height:84px;border:1px dashed #2b3146;border-radius:12px;padding:8px;background:#0f121a;position:relative}
-  .cal-cell .d{position:absolute;top:8px;right:10px;color:#76809a;font-size:12px}
-  .cal-cell .dot{width:6px;height:6px;background:var(--brand);border-radius:50%;display:inline-block;margin-right:6px}
+  .calendar{padding:10px}
+  .cal-head{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:8px
+  }
+  .cal-head .month{font-weight:700;font-size:14px}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;font-size:12px}
+  .cal-cell{
+    min-height:72px;border:1px dashed #2b3146;border-radius:12px;
+    padding:6px;background:#0f121a;position:relative;
+  }
+  .cal-cell .d{
+    position:absolute;top:6px;right:8px;color:#76809a;font-size:11px;
+  }
+  .cal-cell .dot{
+    width:6px;height:6px;background:var(--brand);
+    border-radius:50%;display:inline-block;margin-right:6px
+  }
 
   /* Footer */
-  footer{padding:40px 0 60px;color:#9aa1b5}
-  footer .foot{display:grid;gap:10px;grid-template-columns:2fr 1fr 1fr}
+  footer{padding:32px 0 50px;color:#9aa1b5;font-size:13px}
+  footer .foot{
+    display:grid;gap:10px;grid-template-columns:2fr 1fr 1fr;
+  }
   footer a{color:#c9d3ff}
-  @media (max-width:820px){footer .foot{grid-template-columns:1fr}}
   hr.sep{border:none;height:1px;background:#1b2030;margin:20px 0}
 
   /* Anim */
-  .fadein{animation:fade .35s ease} @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-  </style>
+  .fadein{animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 
+  /* ======= BREAKPOINTS ======= */
+
+  /* Tablets/medianos */
+  @media (max-width:980px){
+    .hero{padding:56px 0 26px}
+    .hero .grid{grid-template-columns:1fr;gap:18px}
+    .grid-3{grid-template-columns:repeat(3,1fr)}
+  }
+
+  /* Tablets pequeños / landscape móvil grande */
+  @media (max-width:820px){
+    .hero h1{font-size:30px}
+    .section h2{font-size:20px}
+    .hero .card{padding:20px}
+    .card.pad{padding:14px}
+    .grid-3{grid-template-columns:repeat(2,1fr)}
+    .grid-2{grid-template-columns:1fr}
+    footer .foot{grid-template-columns:1fr}
+
+    .nav .wrap{
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .nav-toggle{
+      display:block;
+      margin-left:auto;
+    }
+    .nav ul{
+      flex-direction:column;
+      align-items:flex-start;
+      width:100%;
+      max-height:0;
+      overflow:hidden;
+      transition:max-height .25s ease;
+    }
+    .nav ul.open{
+      max-height:380px;
+      padding-bottom:6px;
+    }
+    .nav ul li{width:100%}
+    .nav a{display:block;width:100%}
+  }
+
+  /* Móviles */
+  @media (max-width:600px){
+    .container{padding:0 12px}
+    .hero{padding:52px 0 22px}
+    .hero h1{font-size:26px}
+    .hero p{font-size:14px}
+    .badge{font-size:11px}
+    .kpi h3{font-size:20px}
+    .grid-3{grid-template-columns:1fr}
+    .item{grid-template-columns:1fr}
+    .cal-cell{min-height:64px}
+  }
+
+  /* Móviles pequeños */
+  @media (max-width:400px){
+    body{font-size:14px}
+    .hero h1{font-size:23px}
+    .btn{width:100%;text-align:center;justify-content:center}
+    .cta{flex-direction:column}
+  }
+  </style>
 </head>
 
 <body>
 <nav class="nav">
   <div class="container wrap">
-    <div class="brand"><span class="dot"></span> Agencia Digital</div>
-    <ul>
+    <div class="brand">
+      <span class="dot"></span> Agencia Digital
+    </div>
+
+    <!-- Botón hamburguesa (móvil) -->
+    <button class="nav-toggle" id="navToggle" aria-label="Abrir menú">
+      ☰
+    </button>
+
+    <ul id="navMenu">
       <li><a href="#home">Inicio</a></li>
       <li><a href="#panel">Panel</a></li>
       <li><a href="#servicios">Servicios</a></li>
@@ -164,24 +300,25 @@
   <div class="grid">
     <div class="card">
       <span class="badge">Agencia moderna — Diseño web • Redes • Publicidad • Capacitación</span>
-      <h1>Soluciones digitales con enfoque <span style="background:linear-gradient(90deg,var(--brand),var(--brand-2));-webkit-background-clip:text;background-clip:text;color:transparent">minimalista</span> y resultados medibles.</h1>
-      <p>Centraliza servicios, agenda, tareas y cotizaciones en una sola interfaz pensada para equipos de trabajo.</p>
+      <h1>
+        Soluciones digitales con enfoque
+        <span style="background:linear-gradient(90deg,var(--brand),var(--brand-2));-webkit-background-clip:text;background-clip:text;color:transparent">
+          minimalista
+        </span> y resultados medibles.
+      </h1>
+      <p>
+        Presenta tus servicios, agenda reuniones, gestiona tareas y cotiza al instante.
+        Interfaz limpia, rápida y pensada para trabajar.
+      </p>
       <div class="cta">
         <a class="btn" href="#agenda">Agenda tu asesoría</a>
         <a class="btn secondary" href="#servicios">Solicita tu cotización</a>
-        <!-- NUEVO BOTÓN: instalar app -->
-        <button id="installAppBtn"
-                class="btn secondary"
-                type="button"
-                style="display:none;">
-          Descargar / instalar app
-        </button>
       </div>
     </div>
-    <div class="card" style="display:flex;align-items:center;justify-content:center;min-height:220px;background:linear-gradient(180deg,#0f1320,#0b0f19)">
+    <div class="card" style="display:flex;align-items:center;justify-content:center;min-height:200px;background:linear-gradient(180deg,#0f1320,#0b0f19)">
       <div style="text-align:center">
-        <div style="font-size:48px;opacity:.2">▢ ▢ ▢</div>
-        <div style="color:#8b90a0">Panel ejecutivo de operaciones</div>
+        <div style="font-size:42px;opacity:.2">▢ ▢ ▢</div>
+        <div style="color:#8b90a0;font-size:13px">Mock visual / área digital</div>
       </div>
     </div>
   </div>
@@ -189,102 +326,22 @@
 
 <section id="panel" class="section container">
   <h2>Panel de control</h2>
-  <p class="lead">Vista ejecutiva del estado de tareas, agenda y catálogo de servicios.</p>
-
-  <!-- Alertas globales -->
-  <div id="globalAlerts" class="alerts"></div>
-
-  <div class="grid-3" style="margin-top:10px">
+  <p class="lead">Resumen operativo: tareas, citas y catálogo.</p>
+  <div class="grid-3">
     <div class="card kpi">
       <small>Tareas pendientes</small>
       <h3 id="kpi-tareas">0</h3>
-      <span class="tag">Carga operativa</span>
+      <span class="tag">estado</span>
     </div>
     <div class="card kpi">
       <small>Próximos compromisos</small>
       <h3 id="kpi-citas">0</h3>
-      <span class="tag">Próximos 7 días</span>
+      <span class="tag">7 días</span>
     </div>
     <div class="card kpi">
       <small>Servicios activos</small>
       <h3 id="kpi-servicios">0</h3>
-      <span class="tag">Portafolio</span>
-    </div>
-  </div>
-
-  <!-- Dashboard de métricas + gráficas -->
-  <div class="grid-2" style="margin-top:18px">
-    <div class="card pad">
-      <h3 style="margin-top:0;font-size:16px">Métricas del portafolio</h3>
-      <p class="lead" style="margin-top:4px">Indicadores generales del catálogo de servicios.</p>
-      <div class="list">
-        <div class="item" style="padding:10px 12px;">
-          <div>
-            <strong>Valor total del catálogo</strong>
-            <div class="meta">Importe agregado de todos los servicios activos.</div>
-          </div>
-          <div class="price" id="metric-servicios-total">—</div>
-        </div>
-        <div class="item" style="padding:10px 12px;">
-          <div>
-            <strong>Ticket promedio por servicio</strong>
-            <div class="meta">Promedio de inversión por servicio ofertado.</div>
-          </div>
-          <div class="price" id="metric-servicios-promedio">—</div>
-        </div>
-        <div class="item" style="padding:10px 12px;">
-          <div>
-            <strong>Categoría más recurrente</strong>
-            <div class="meta">Tipo de servicio con mayor presencia en el portafolio.</div>
-          </div>
-          <div class="price" id="metric-servicios-topcat">—</div>
-        </div>
-      </div>
-
-      <div class="chart-wrap">
-        <div class="meta">Distribución de servicios por categoría</div>
-        <canvas id="chart-services-cat"></canvas>
-      </div>
-    </div>
-
-    <div class="card pad">
-      <h3 style="margin-top:0;font-size:16px">Métricas de agenda y tareas</h3>
-      <p class="lead" style="margin-top:4px">Seguimiento de compromisos y carga operativa.</p>
-      <div class="list">
-        <div class="item" style="padding:10px 12px;">
-          <div>
-            <strong>Citas agendadas para hoy</strong>
-            <div class="meta">Reuniones y eventos en la fecha actual.</div>
-          </div>
-          <div class="price" id="metric-citas-hoy">0</div>
-        </div>
-        <div class="item" style="padding:10px 12px;">
-          <div>
-            <strong>Citas próximos 7 días</strong>
-            <div class="meta">Incluye hoy y los días posteriores de la semana.</div>
-          </div>
-          <div class="price" id="metric-citas-semana">0</div>
-        </div>
-        <div class="item" style="padding:10px 12px;">
-          <div>
-            <strong>Tareas que vencen hoy</strong>
-            <div class="meta">Pendientes con fecha límite en la jornada actual.</div>
-          </div>
-          <div class="price" id="metric-tareas-hoy">0</div>
-        </div>
-        <div class="item" style="padding:10px 12px;">
-          <div>
-            <strong>Tareas vencidas</strong>
-            <div class="meta">Compromisos cuya fecha límite ya expiró.</div>
-          </div>
-          <div class="price" id="metric-tareas-vencidas">0</div>
-        </div>
-      </div>
-
-      <div class="chart-wrap">
-        <div class="meta">Estado global de las tareas</div>
-        <canvas id="chart-tasks-status"></canvas>
-      </div>
+      <span class="tag">catálogo</span>
     </div>
   </div>
 </section>
@@ -294,14 +351,18 @@
 <!-- ====== SERVICIOS + COTIZADOR ====== -->
 <section id="servicios" class="section container">
   <h2>Servicios</h2>
-  <p class="lead">Administra tu portafolio y genera cotizaciones detalladas a partir de los servicios seleccionados.</p>
+  <p class="lead">Administra tu catálogo y arma cotizaciones seleccionando los servicios necesarios.</p>
   <div class="grid-2">
     <!-- Formulario de servicio -->
     <div class="card pad">
       <form id="serviceForm" class="fadein">
         <div class="row">
-          <div><label>Nombre del servicio</label><input class="input" id="svc-name" placeholder="Ej. Sitio web corporativo" required /></div>
-          <div><label>Categoría</label>
+          <div>
+            <label>Nombre del servicio</label>
+            <input class="input" id="svc-name" placeholder="Ej. Sitio web corporativo" required />
+          </div>
+          <div>
+            <label>Categoría</label>
             <select id="svc-cat" class="input" required>
               <option value="Diseño web">Diseño web</option>
               <option value="Publicidad digital">Publicidad digital</option>
@@ -311,8 +372,14 @@
           </div>
         </div>
         <div class="row">
-          <div><label>Precio estimado (COP)</label><input type="number" min="0" step="10000" class="input" id="svc-price" placeholder="3500000" required /></div>
-          <div><label>Duración / Modalidad</label><input class="input" id="svc-meta" placeholder="4 semanas | Remoto" /></div>
+          <div>
+            <label>Precio estimado (COP)</label>
+            <input type="number" min="0" step="10000" class="input" id="svc-price" placeholder="3500000" required />
+          </div>
+          <div>
+            <label>Duración / Modalidad</label>
+            <input class="input" id="svc-meta" placeholder="4 semanas | Remoto" />
+          </div>
         </div>
         <label>Descripción</label>
         <textarea id="svc-desc" class="input" rows="3" placeholder="UI responsiva, CMS y SEO base."></textarea>
@@ -326,7 +393,7 @@
     <!-- Listado y Cotizador -->
     <div class="card pad">
       <div class="actions" style="justify-content:space-between;align-items:center;margin-bottom:6px">
-        <strong>Listado de servicios</strong>
+        <strong>Listado</strong>
         <select id="svc-filter" class="input" style="max-width:220px">
           <option value="all">Todas las categorías</option>
           <option value="Diseño web">Diseño web</option>
@@ -340,44 +407,21 @@
       <hr class="sep" />
 
       <strong>Cotizador</strong>
-      <p class="meta" style="color:#aab1c6">Selecciona servicios del listado y arma una propuesta con desglose de valores.</p>
+      <p class="meta" style="color:#aab1c6;font-size:12px">
+        Selecciona servicios del listado (checkbox) y aquí verás el detalle y el total.
+      </p>
       <div class="list" id="quoteList"></div>
-
-      <div class="row" style="margin-top:10px">
-        <div>
-          <label>Cliente / proyecto</label>
-          <input id="quote-client" class="input" placeholder="Nombre del cliente o proyecto" />
-        </div>
-        <div>
-          <label>Notas de la cotización</label>
-          <input id="quote-notes" class="input" placeholder="Alcance, tiempos, condiciones..." />
-        </div>
-      </div>
-
       <div class="row" style="margin-top:10px">
         <div>
           <label><input type="checkbox" id="quote-iva" /> Incluir IVA (19%)</label>
         </div>
         <div>
-          <label>Descuento (%)</label>
-          <input id="quote-discount" type="number" min="0" max="100" step="1" class="input" placeholder="0" />
+          <label>Notas de la cotización</label>
+          <input id="quote-notes" class="input" placeholder="Condiciones, alcance, tiempos..." />
         </div>
       </div>
-
-      <div class="row" style="margin-top:10px">
-        <div>
-          <label>Vigencia de la oferta (días)</label>
-          <input id="quote-valid" type="number" min="0" step="1" class="input" placeholder="15" />
-        </div>
-      </div>
-
-      <div style="display:flex;justify-content:flex-end;gap:14px;margin-top:12px;align-items:flex-end;flex-wrap:wrap">
-        <div style="text-align:right;min-width:220px">
-          <div style="font-size:13px;color:#aab1c6">Subtotal: <span id="quote-subtotal"></span></div>
-          <div style="font-size:13px;color:#aab1c6">Descuento: <span id="quote-discount-amount"></span></div>
-          <div style="font-size:13px;color:#aab1c6">IVA: <span id="quote-iva-amount"></span></div>
-          <div style="margin-top:4px"><strong>Total:</strong> <span id="quote-total" style="font-size:18px"></span></div>
-        </div>
+      <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:12px;align-items:baseline;flex-wrap:wrap">
+        <div><strong>Total:</strong> <span id="quote-total" style="font-size:16px"></span></div>
         <button class="iconbtn" id="quote-copy" type="button">Copiar resumen</button>
         <button class="iconbtn danger" id="quote-clear" type="button">Limpiar cotización</button>
       </div>
@@ -390,23 +434,40 @@
 <!-- ====== AGENDA ====== -->
 <section id="agenda" class="section container">
   <h2>Agenda y calendario</h2>
-  <p class="lead">Programa compromisos con fecha, hora y notas. Visualiza la carga semanal en la agenda y el calendario.</p>
+  <p class="lead">Programa compromisos con fecha, hora y notas. Visualiza en calendario y lista.</p>
   <div class="grid-2">
     <div class="card pad">
       <form id="apptForm" class="fadein">
         <div class="row">
-          <div><label>Título</label><input class="input" id="appt-title" placeholder="Reunión de brief" required /></div>
-          <div><label>Fecha y hora</label><input class="input" id="appt-datetime" type="datetime-local" required /></div>
+          <div>
+            <label>Título</label>
+            <input class="input" id="appt-title" placeholder="Reunión de brief" required />
+          </div>
+          <div>
+            <label>Fecha y hora</label>
+            <input class="input" id="appt-datetime" type="datetime-local" required />
+          </div>
         </div>
-        <label>Notas</label><textarea id="appt-notes" class="input" rows="3" placeholder="Objetivo, participantes, puntos clave..."></textarea>
-        <div class="actions" style="margin-top:10px"><button type="submit" class="btn">Agregar compromiso</button><button type="reset" class="iconbtn">Limpiar</button></div>
+        <label>Notas</label>
+        <textarea id="appt-notes" class="input" rows="3" placeholder="Puntos a tratar..."></textarea>
+        <div class="actions" style="margin-top:10px">
+          <button type="submit" class="btn">Agregar compromiso</button>
+          <button type="reset" class="iconbtn">Limpiar</button>
+        </div>
       </form>
-      <div style="margin-top:14px"><strong>Próximos compromisos</strong><div id="apptList" class="list"></div></div>
+      <div style="margin-top:14px">
+        <strong>Próximos compromisos</strong>
+        <div id="apptList" class="list"></div>
+      </div>
     </div>
     <div class="card pad">
       <div class="calendar">
-        <div class="cal-head"><button class="iconbtn" id="prevMonth">◀</button><div class="month" id="calLabel">Mes Año</div><button class="iconbtn" id="nextMonth">▶</button></div>
-        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:6px;color:#9aa1b5;font-size:12px">
+        <div class="cal-head">
+          <button class="iconbtn" id="prevMonth" type="button">◀</button>
+          <div class="month" id="calLabel">Mes Año</div>
+          <button class="iconbtn" id="nextMonth" type="button">▶</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px;color:#9aa1b5;font-size:11px">
           <div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div>
         </div>
         <div id="calGrid" class="cal-grid"></div>
@@ -420,34 +481,55 @@
 <!-- ====== TAREAS ====== -->
 <section id="tareas" class="section container">
   <h2>Gestor de tareas y proyectos</h2>
-  <p class="lead">Organiza entregables, campañas y pendientes. Controla prioridades y fechas de vencimiento.</p>
+  <p class="lead">Organiza entregas, campañas y pendientes. Marca como completadas y filtra por vencimiento.</p>
   <div class="grid-2">
     <div class="card pad">
       <form id="taskForm" class="fadein">
         <div class="row">
-          <div><label>Tarea</label><input class="input" id="task-title" placeholder="Diseñar landing page" required /></div>
-          <div><label>Fecha límite</label><input class="input" id="task-due" type="date" /></div>
-        </div>
-        <div class="row">
-          <div><label>Proyecto / Cliente</label><input class="input" id="task-project" placeholder="Cliente XYZ" /></div>
-          <div><label>Prioridad</label>
-            <select id="task-priority" class="input"><option>Media</option><option>Alta</option><option>Baja</option></select>
+          <div>
+            <label>Tarea</label>
+            <input class="input" id="task-title" placeholder="Diseñar landing" required />
+          </div>
+          <div>
+            <label>Fecha límite</label>
+            <input class="input" id="task-due" type="date" />
           </div>
         </div>
-        <label>Detalles</label><textarea id="task-notes" class="input" rows="3" placeholder="Piezas, formatos, entregables..."></textarea>
-        <div class="actions" style="margin-top:10px"><button class="btn" type="submit">Agregar tarea</button><button class="iconbtn" type="reset">Limpiar</button></div>
+        <div class="row">
+          <div>
+            <label>Proyecto / Cliente</label>
+            <input class="input" id="task-project" placeholder="Cliente XYZ" />
+          </div>
+          <div>
+            <label>Prioridad</label>
+            <select id="task-priority" class="input">
+              <option>Media</option><option>Alta</option><option>Baja</option>
+            </select>
+          </div>
+        </div>
+        <label>Detalles</label>
+        <textarea id="task-notes" class="input" rows="3" placeholder="Piezas, formatos, entregables..."></textarea>
+        <div class="actions" style="margin-top:10px">
+          <button class="btn" type="submit">Agregar tarea</button>
+          <button class="iconbtn" type="reset">Limpiar</button>
+        </div>
       </form>
     </div>
     <div class="card pad">
-      <div class="actions" style="justify-content:space-between;align-items:center">
+      <div class="actions" style="justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
         <div class="actions">
-          <select id="task-filter" class="input" style="max-width:210px">
-            <option value="all">Todas</option><option value="pending">Pendientes</option>
-            <option value="done">Completadas</option><option value="overdue">Vencidas</option>
-            <option value="today">Vencen hoy</option><option value="week">Esta semana</option>
+          <select id="task-filter" class="input" style="max-width:200px">
+            <option value="all">Todas</option>
+            <option value="pending">Pendientes</option>
+            <option value="done">Completadas</option>
+            <option value="overdue">Vencidas</option>
+            <option value="today">Vencen hoy</option>
+            <option value="week">Esta semana</option>
           </select>
-          <select id="task-sort" class="input" style="max-width:210px">
-            <option value="date">Ordenar por fecha</option><option value="priority">Orden por prioridad</option><option value="alpha">Alfabético</option>
+          <select id="task-sort" class="input" style="max-width:200px">
+            <option value="date">Ordenar por fecha</option>
+            <option value="priority">Orden por prioridad</option>
+            <option value="alpha">Alfabético</option>
           </select>
         </div>
         <button id="clearDone" class="iconbtn danger" type="button">Eliminar completadas</button>
@@ -459,11 +541,31 @@
 
 <footer id="contacto" class="container">
   <div class="foot">
-    <div><strong>Agencia Digital</strong><p style="color:#aab1c6">Diseño web, redes sociales, publicidad y capacitación. Gestión integral: agenda, tareas y cotizador.</p></div>
-    <div><strong>Contacto</strong><p>Correo: <a href="mailto:hola@agencia.digital">hola@agencia.digital</a><br/>Tel: +57 300 000 0000<br/>Redes: @agencia.digital</p></div>
-    <div><strong>Legal</strong><p><a href="#">Política de privacidad</a><br/><a href="#">Términos del servicio</a></p></div>
+    <div>
+      <strong>Agencia Digital</strong>
+      <p style="color:#aab1c6">
+        Diseño web, redes sociales, publicidad y capacitación. Gestión integral: agenda, tareas y cotizador.
+      </p>
+    </div>
+    <div>
+      <strong>Contacto</strong>
+      <p>
+        Correo: <a href="mailto:hola@agencia.digital">hola@agencia.digital</a><br/>
+        Tel: +57 300 000 0000<br/>
+        Redes: @agencia.digital
+      </p>
+    </div>
+    <div>
+      <strong>Legal</strong>
+      <p>
+        <a href="#">Política de privacidad</a><br/>
+        <a href="#">Términos del servicio</a>
+      </p>
+    </div>
   </div>
-  <p style="margin-top:20px;color:#7f879b">© <span id="year"></span> Agencia Digital — Todos los derechos reservados.</p>
+  <p style="margin-top:16px;color:#7f879b;font-size:12px">
+    © <span id="year"></span> Agencia Digital — Todos los derechos reservados.
+  </p>
 </footer>
 
 <!-- ========= MODAL LOGIN ========= -->
@@ -478,7 +580,7 @@
   z-index: 9999;">
   <div style="
     background:#111521;
-    padding:26px;
+    padding:24px;
     width:90%;
     max-width:360px;
     border-radius:18px;
@@ -492,12 +594,12 @@
     <label style="margin-top:10px">Contraseña</label>
     <input id="login-pass" type="password" class="input" placeholder="Contraseña" />
 
-    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px">
+    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px;flex-wrap:wrap">
       <button class="iconbtn" id="closeLogin" type="button">Cancelar</button>
       <button class="btn" id="loginBtn" type="button">Entrar</button>
     </div>
 
-    <p id="login-error" style="color:#ff6b6b; display:none; margin-top:12px;">
+    <p id="login-error" style="color:#ff6b6b; display:none; margin-top:12px;font-size:13px;">
       Usuario o contraseña incorrectos
     </p>
     <p style="margin-top:8px;font-size:12px;color:#8b90a0;">
@@ -519,7 +621,7 @@
   z-index: 10000;">
   <div style="
     background:#111521;
-    padding:26px;
+    padding:24px;
     width:90%;
     max-width:360px;
     border-radius:18px;
@@ -533,12 +635,12 @@
     <label style="margin-top:10px">Contraseña</label>
     <input id="reg-pass" type="password" class="input" placeholder="Contraseña" />
 
-    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px">
+    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px;flex-wrap:wrap">
       <button class="iconbtn" id="closeRegister" type="button">Cancelar</button>
       <button class="btn" id="registerBtn" type="button">Crear cuenta</button>
     </div>
 
-    <p id="reg-error" style="color:#ff6b6b; display:none; margin-top:12px;">
+    <p id="reg-error" style="color:#ff6b6b; display:none; margin-top:12px;font-size:13px;">
       Error al registrar usuario
     </p>
     <p style="margin-top:8px;font-size:12px;color:#8b90a0;">
@@ -555,22 +657,14 @@ const $$ = (q,root=document)=>Array.from(root.querySelectorAll(q));
 const COP = new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0});
 const fmtMoney = n => COP.format(n||0);
 const todayStr = ()=> new Date().toISOString().slice(0,10);
-const LS_PREFIX = 'agencyState_';
 
-/* ---------- Estado en memoria (local + Firestore) ---------- */
+/* ---------- Estado en memoria (solo Firestore) ---------- */
 let services = [];
 let appts    = [];
 let tasks    = [];
 let quoteSel = new Set();
-let quoteConfig = {
-  iva: false,
-  notes: '',
-  client: '',
-  discount: 0,
-  validDays: ''
-};
 
-/* ---------- Sync con localStorage + Firestore ---------- */
+/* ---------- Sync con Firestore ---------- */
 function getCurrentUser(){
   try { return localStorage.getItem('sessionUser') || null; }
   catch { return null; }
@@ -578,24 +672,13 @@ function getCurrentUser(){
 
 function syncUserState(){
   const user = getCurrentUser();
-  const state = {
-    services,
-    appts,
-    tasks,
-    quoteSel: Array.from(quoteSel || []),
-    quoteConfig
-  };
-
-  if(user){
-    try{
-      localStorage.setItem(LS_PREFIX + user, JSON.stringify(state));
-    }catch(e){
-      console.warn('No se pudo guardar estado en localStorage:', e);
-    }
-  }
-
   if(user && window.saveUserState){
-    window.saveUserState(user, state);
+    window.saveUserState(user, {
+      services,
+      appts,
+      tasks,
+      quoteSel: Array.from(quoteSel || [])
+    });
   }
 }
 
@@ -604,233 +687,27 @@ function hydrateState(state){
   appts    = Array.isArray(state?.appts)    ? state.appts    : [];
   tasks    = Array.isArray(state?.tasks)    ? state.tasks    : [];
   quoteSel = new Set(Array.isArray(state?.quoteSel) ? state.quoteSel : []);
-  quoteConfig = state?.quoteConfig || {
-    iva:false,
-    notes:'',
-    client:'',
-    discount:0,
-    validDays:''
-  };
-
-  const ivaChk = $('#quote-iva');
-  if(ivaChk) ivaChk.checked = !!quoteConfig.iva;
-  if($('#quote-notes'))   $('#quote-notes').value   = quoteConfig.notes || '';
-  if($('#quote-client'))  $('#quote-client').value  = quoteConfig.client || '';
-  if($('#quote-discount'))$('#quote-discount').value= quoteConfig.discount ?? '';
-  if($('#quote-valid'))   $('#quote-valid').value   = quoteConfig.validDays ?? '';
-
   renderServices();
   renderApptList();
   renderTasks();
   refreshKPIs();
   buildCalendar();
-
-  const user = getCurrentUser();
-  if(user){
-    try{
-      localStorage.setItem(LS_PREFIX + user, JSON.stringify({
-        services,
-        appts,
-        tasks,
-        quoteSel: Array.from(quoteSel),
-        quoteConfig
-      }));
-    }catch(e){
-      console.warn('No se pudo persistir estado hidratado en localStorage:', e);
-    }
-  }
 }
 window.hydrateState = hydrateState;
 
-/* ---------- Gráficas ---------- */
-function drawBarChart(canvasId, data){
-  const canvas = document.getElementById(canvasId);
-  if(!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 1;
-  const rect = canvas.getBoundingClientRect();
-  const width = (rect.width || 320);
-  const height = (rect.height || 180);
-
-  canvas.width = width * dpr;
-  canvas.height = height * dpr;
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-  ctx.clearRect(0,0,width,height);
-
-  ctx.fillStyle = '#0b0d16';
-  ctx.fillRect(0,0,width,height);
-
-  if(!data || !data.length || data.every(d=>!d.value)){
-    ctx.fillStyle='#8b90a0';
-    ctx.font='12px system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
-    ctx.textAlign='center';
-    ctx.textBaseline='middle';
-    ctx.fillText('Sin datos suficientes para graficar', width/2, height/2);
-    return;
-  }
-
-  const pad = {top:10,right:10,bottom:34,left:34};
-  const chartWidth = width - pad.left - pad.right;
-  const chartHeight = height - pad.top - pad.bottom;
-  const maxVal = Math.max(...data.map(d=>d.value)) || 1;
-
-  const barCount = data.length;
-  const barWidth = chartWidth / (barCount * 1.8);
-  const gap = (chartWidth - barWidth * barCount) / (barCount + 1);
-
-  // Ejes
-  ctx.strokeStyle='#23283a';
-  ctx.lineWidth=1;
-  ctx.beginPath();
-  ctx.moveTo(pad.left, pad.top);
-  ctx.lineTo(pad.left, pad.top+chartHeight);
-  ctx.lineTo(pad.left+chartWidth, pad.top+chartHeight);
-  ctx.stroke();
-
-  // Barras
-  data.forEach((d,i)=>{
-    const value = d.value;
-    const barHeight = (value / maxVal) * (chartHeight - 8);
-    const x = pad.left + gap + i * (barWidth + gap);
-    const y = pad.top + chartHeight - barHeight;
-
-    const grad = ctx.createLinearGradient(x, y, x, pad.top + chartHeight);
-    grad.addColorStop(0, '#6ee7f3');
-    grad.addColorStop(1, '#5ea1ff');
-
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.roundRect(x, y, barWidth, barHeight, 6);
-    ctx.fill();
-
-    // Valor
-    ctx.fillStyle='#dbe4ff';
-    ctx.font='11px system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
-    ctx.textAlign='center';
-    ctx.textBaseline='bottom';
-    ctx.fillText(value, x + barWidth/2, y - 2);
-
-    // Etiquetas
-    ctx.fillStyle='#8b90a0';
-    ctx.font='10px system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
-    ctx.textBaseline='top';
-    const label = d.label.length > 12 ? d.label.slice(0,11)+'…' : d.label;
-    ctx.fillText(label, x + barWidth/2, pad.top + chartHeight + 4);
-  });
-}
-
-/* ---------- KPIs + Métricas + Alertas ---------- */
-function refreshMetrics(){
-  const totalServicesValue = services.reduce((acc,s)=>acc+Number(s.price||0),0);
-  const avgPrice = services.length ? totalServicesValue / services.length : 0;
-  const byCat = services.reduce((acc,s)=>{
-    if(!s.cat) return acc;
-    acc[s.cat] = (acc[s.cat]||0)+1;
-    return acc;
-  },{});
-  const topCat = Object.entries(byCat).sort((a,b)=>b[1]-a[1])[0]?.[0] || 'Sin datos';
-
-  const elTotal = $('#metric-servicios-total');
-  if(elTotal) elTotal.textContent = fmtMoney(totalServicesValue);
-  const elAvg = $('#metric-servicios-promedio');
-  if(elAvg) elAvg.textContent = avgPrice ? fmtMoney(avgPrice) : '—';
-  const elTopCat = $('#metric-servicios-topcat');
-  if(elTopCat) elTopCat.textContent = topCat;
-
-  const now = new Date();
-  const todayISO = todayStr();
-  const weekEnd = new Date();
-  weekEnd.setDate(now.getDate()+7);
-
-  const apptsToday = appts.filter(a=> a.datetime && a.datetime.slice(0,10)===todayISO).length;
-  const apptsWeek  = appts.filter(a=>{
-    if(!a.datetime) return false;
-    const d = new Date(a.datetime);
-    return d>=now && d<=weekEnd;
-  }).length;
-  const overdue = tasks.filter(isOverdue).length;
-  const dueToday = tasks.filter(t=> t.due===todayISO && !t.done).length;
-
-  const mCH = $('#metric-citas-hoy'); if(mCH) mCH.textContent = apptsToday;
-  const mCW = $('#metric-citas-semana'); if(mCW) mCW.textContent = apptsWeek;
-  const mTH = $('#metric-tareas-hoy'); if(mTH) mTH.textContent = dueToday;
-  const mTV = $('#metric-tareas-vencidas'); if(mTV) mTV.textContent = overdue;
-
-  // Datos para gráficos
-  const servicesChartData = Object.entries(byCat).map(([cat,count])=>({label:cat,value:count}));
-  drawBarChart('chart-services-cat', servicesChartData);
-
-  const doneCount = tasks.filter(t=>t.done).length;
-  const pendingCount = tasks.filter(t=>!t.done && !isOverdue(t)).length;
-  const tasksChartData = [
-    {label:'Pendientes',  value: pendingCount},
-    {label:'Vencidas',    value: overdue},
-    {label:'Completadas', value: doneCount}
-  ];
-  drawBarChart('chart-tasks-status', tasksChartData);
-
-  refreshAlerts({apptsToday,apptsWeek,overdue,dueToday});
-}
-
-function refreshAlerts({apptsToday,apptsWeek,overdue,dueToday}={}){
-  const wrap = $('#globalAlerts'); if(!wrap) return;
-  wrap.innerHTML = '';
-
-  const pills = [];
-
-  if(overdue>0){
-    pills.push({
-      type:'danger',
-      text:`Tiene ${overdue} tarea(s) vencida(s). Priorice su revisión en el módulo de tareas.`
-    });
-  }
-  if(dueToday>0){
-    pills.push({
-      type:'warn',
-      text:`Tiene ${dueToday} tarea(s) con fecha de vencimiento hoy.`
-    });
-  }
-  if(apptsToday>0){
-    pills.push({
-      type:'warn',
-      text:`Agenda de hoy: ${apptsToday} cita(s) confirmada(s).`
-    });
-  }else if(apptsWeek>0){
-    pills.push({
-      type:'ok',
-      text:`Agenda próxima: ${apptsWeek} cita(s) programada(s) en los próximos 7 días.`
-    });
-  }
-
-  if(!pills.length){
-    pills.push({
-      type:'ok',
-      text:'Operación al día: no hay tareas vencidas ni citas críticas en este momento.'
-    });
-  }
-
-  pills.forEach(p=>{
-    const el = document.createElement('div');
-    el.className = `alert-pill ${p.type}`;
-    el.textContent = p.text;
-    wrap.appendChild(el);
-  });
-}
-
+/* ---------- KPIs ---------- */
 function refreshKPIs(){
   const pending = tasks.filter(t=>!t.done).length;
   const weekFrom = new Date();
   const weekTo = new Date();
   weekTo.setDate(weekTo.getDate()+7);
   const upcoming = appts.filter(a=>{
-    if(!a.datetime) return false;
     const d=new Date(a.datetime);
-    return d>=weekFrom && d<=weekTo;
+    return d>=weekFrom && d<=weekTo
   }).length;
   $('#kpi-tareas').textContent = pending;
   $('#kpi-citas').textContent = upcoming;
   $('#kpi-servicios').textContent = services.length;
-  refreshMetrics();
 }
 
 /* ---------- Servicios + Cotizador ---------- */
@@ -846,7 +723,7 @@ function renderServices(){
       el.className='item fadein';
       el.innerHTML = `
         <div>
-          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
             <input type="checkbox" data-select="${s.id}" title="Agregar al cotizador" ${checked}/>
             <strong>${s.name}</strong>
             <span class="badge-cat">${s.cat}</span>
@@ -936,22 +813,10 @@ function renderQuote(){
       </div>`;
     list.appendChild(row);
   });
-
-  const discountPct = Number(quoteConfig.discount || 0);
-  const discount = subtotal * (isNaN(discountPct)?0:discountPct/100);
-  const base = subtotal - discount;
-  const ivaOn = !!quoteConfig.iva;
-  const iva = ivaOn ? base * 0.19 : 0;
-  const total = base + iva;
-
-  const subtotalEl = $('#quote-subtotal');
-  const discountEl = $('#quote-discount-amount');
-  const ivaEl = $('#quote-iva-amount');
+  const ivaOn = $('#quote-iva')?.checked;
+  const iva = ivaOn ? subtotal * 0.19 : 0;
+  const total = subtotal + iva;
   const totalEl = $('#quote-total');
-
-  if(subtotalEl) subtotalEl.textContent = fmtMoney(subtotal);
-  if(discountEl) discountEl.textContent = discount>0 ? `- ${fmtMoney(discount)}` : fmtMoney(0);
-  if(ivaEl) ivaEl.textContent = ivaOn ? fmtMoney(iva) : 'No aplica';
   if(totalEl) totalEl.textContent = fmtMoney(total);
 }
 
@@ -963,41 +828,15 @@ $('#quoteList')?.addEventListener('click', e=>{
   syncUserState();
 });
 
-$('#quote-iva')?.addEventListener('change', (e)=>{
-  quoteConfig.iva = e.target.checked;
+$('#quote-iva')?.addEventListener('change', ()=>{
   renderQuote();
-  syncUserState();
-});
-
-$('#quote-notes')?.addEventListener('input', (e)=>{
-  quoteConfig.notes = e.target.value;
-  syncUserState();
-});
-$('#quote-client')?.addEventListener('input', (e)=>{
-  quoteConfig.client = e.target.value;
-  syncUserState();
-});
-$('#quote-discount')?.addEventListener('input', (e)=>{
-  const v = Number(e.target.value || 0);
-  quoteConfig.discount = isNaN(v)?0:v;
-  renderQuote();
-  syncUserState();
-});
-$('#quote-valid')?.addEventListener('input', (e)=>{
-  quoteConfig.validDays = e.target.value;
   syncUserState();
 });
 
 $('#quote-clear')?.addEventListener('click', ()=>{
   quoteSel.clear();
-  quoteConfig = { iva:false, notes:'', client:'', discount:0, validDays:'' };
-
-  if($('#quote-iva')) $('#quote-iva').checked = false;
-  if($('#quote-notes')) $('#quote-notes').value = '';
-  if($('#quote-client')) $('#quote-client').value = '';
-  if($('#quote-discount')) $('#quote-discount').value = '';
-  if($('#quote-valid')) $('#quote-valid').value = '';
-
+  const notes = $('#quote-notes');
+  if(notes) notes.value='';
   renderServices();
   renderQuote();
   syncUserState();
@@ -1006,30 +845,18 @@ $('#quote-clear')?.addEventListener('click', ()=>{
 const quoteCopyBtn = $('#quote-copy');
 quoteCopyBtn?.addEventListener('click', async ()=>{
   const items = services.filter(s=> quoteSel.has(s.id));
+  const ivaOn = $('#quote-iva')?.checked;
   const subtotal = items.reduce((a,b)=>a+Number(b.price||0),0);
-
-  const discountPct = Number(quoteConfig.discount || 0);
-  const discount = subtotal * (isNaN(discountPct)?0:discountPct/100);
-  const base = subtotal - discount;
-  const ivaOn = !!quoteConfig.iva;
-  const iva = ivaOn ? base * 0.19 : 0;
-  const total = base + iva;
-
+  const iva = ivaOn? subtotal*0.19 : 0;
+  const total = subtotal + iva;
   const lines = [
     '— COTIZACIÓN —',
-    `Fecha: ${new Date().toLocaleString('es-CO')}`,
-    quoteConfig.client ? `Cliente / proyecto: ${quoteConfig.client}` : '',
-    '',
     ...items.map(s=>`• ${s.name} (${s.cat}) — ${fmtMoney(s.price)}${s.meta? ' | '+s.meta:''}`),
-    '',
     `Subtotal: ${fmtMoney(subtotal)}`,
-    discount>0 ? `Descuento (${discountPct}%): -${fmtMoney(discount)}` : 'Descuento: 0',
     ivaOn ? `IVA (19%): ${fmtMoney(iva)}` : 'IVA: No aplica',
-    `TOTAL: ${fmtMoney(total)}`,
-    quoteConfig.validDays ? `Vigencia de la oferta: ${quoteConfig.validDays} día(s)` : '',
-    quoteConfig.notes ? `Notas: ${quoteConfig.notes}` : ''
+    `Total: ${fmtMoney(total)}`,
+    $('#quote-notes')?.value ? `Notas: ${$('#quote-notes').value}` : ''
   ].filter(Boolean).join('\n');
-
   try{
     await navigator.clipboard.writeText(lines);
     const old = quoteCopyBtn.textContent;
@@ -1061,7 +888,7 @@ function buildCalendar(){
     const cell=document.createElement('div'); cell.className='cal-cell';
     const dateISO = new Date(y,m,d).toISOString().slice(0,10);
     cell.dataset.date = dateISO;
-    const dots = appts.some(a=>a.datetime && a.datetime.startsWith(dateISO)) ? '<span class="dot"></span>' : '';
+    const dots = appts.some(a=>a.datetime.startsWith(dateISO)) ? '<span class="dot"></span>' : '';
     cell.innerHTML = `<span class="d">${d}</span><div style="margin-top:22px">${dots}</div>`;
     cell.addEventListener('click',()=> filterApptByDate(dateISO));
     grid.appendChild(cell);
@@ -1075,11 +902,9 @@ function renderApptList(list){
   const sorted = [...data].sort((a,b)=> new Date(a.datetime)-new Date(b.datetime));
   sorted.forEach((a)=>{
     const el = document.createElement('div'); el.className='item fadein';
-    const whenTxt = a.datetime
-      ? new Date(a.datetime).toLocaleString('es-CO',{dateStyle:'medium',timeStyle:'short'})
-      : 'Sin fecha';
+    const when = new Date(a.datetime).toLocaleString('es-CO',{dateStyle:'medium',timeStyle:'short'});
     el.innerHTML = `
-      <div><strong>${a.title}</strong><div class="meta">${whenTxt}${a.notes? ' · '+a.notes:''}</div></div>
+      <div><strong>${a.title}</strong><div class="meta">${when}${a.notes? ' · '+a.notes:''}</div></div>
       <div class="actions"><button class="iconbtn" data-edit="${a.id}">Editar</button><button class="iconbtn danger" data-del="${a.id}">Eliminar</button></div>`;
     wrap.appendChild(el);
   });
@@ -1088,7 +913,7 @@ function renderApptList(list){
 }
 
 function filterApptByDate(dateISO){
-  const filtered = appts.filter(a=>a.datetime && a.datetime.startsWith(dateISO));
+  const filtered = appts.filter(a=>a.datetime.startsWith(dateISO));
   renderApptList(filtered.length?filtered:appts);
 }
 
@@ -1179,7 +1004,7 @@ function renderTasks(){
 
   list.forEach(t=>{
     const el=document.createElement('div'); el.className='item fadein';
-    const dueTxt = t.due ? new Date(t.due+'T12:00').toLocaleDateString('es-CO',{dateStyle:'medium'}) : 'Sin fecha límite';
+    const dueTxt = t.due ? new Date(t.due+'T12:00').toLocaleDateString('es-CO',{dateStyle:'medium'}) : 'Sin fecha';
     const status = t.done
       ? `<span class="badge-cat" style="border-color:#244033;background:#0e1612;color:#a0f0cc">Completada</span>`
       : isOverdue(t)
@@ -1187,13 +1012,13 @@ function renderTasks(){
         : `<span class="badge-cat">Pendiente</span>`;
     el.innerHTML = `
       <div>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
           <input type="checkbox" ${t.done?'checked':''} data-toggle="${t.id}"/>
           <strong>${t.title}</strong> ${status}
           <span class="badge-cat">${t.priority}</span>
           ${t.project? `<span class="badge-cat">${t.project}</span>`:''}
         </div>
-        <div class="meta">Fecha límite: ${dueTxt}${t.notes? ' · '+t.notes:''}</div>
+        <div class="meta">Vence: ${dueTxt}${t.notes? ' · '+t.notes:''}</div>
       </div>
       <div class="actions">
         <button class="iconbtn" data-edit="${t.id}">Editar</button>
@@ -1265,28 +1090,18 @@ $('#clearDone')?.addEventListener('click', ()=>{
 document.addEventListener('DOMContentLoaded', ()=>{
   const yearEl = document.getElementById('year');
   if(yearEl) yearEl.textContent = new Date().getFullYear();
-
-  try{
-    const user = getCurrentUser();
-    if(user){
-      const raw = localStorage.getItem(LS_PREFIX + user);
-      if(raw){
-        const state = JSON.parse(raw);
-        if(window.hydrateState){
-          window.hydrateState(state);
-          return;
-        }
-      }
-    }
-  }catch(e){
-    console.warn('No se pudo leer estado de localStorage en inicio:', e);
-  }
-
   renderServices();
   renderApptList();
   renderTasks();
   refreshKPIs();
   buildCalendar();
+
+  // Toggle menú responsive
+  const navToggle = document.getElementById('navToggle');
+  const navMenu   = document.getElementById('navMenu');
+  navToggle?.addEventListener('click', ()=>{
+    navMenu.classList.toggle('open');
+  });
 });
 </script>
 
@@ -1548,16 +1363,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
     services: [],
     appts: [],
     tasks: [],
-    quoteSel: [],
-    quoteConfig: {
-      iva:false,
-      notes:'',
-      client:'',
-      discount:0,
-      validDays:''
-    }
+    quoteSel: []
   };
 
+  // REGISTRO: crea un nuevo doc de usuario con contraseña y estado inicial
   window.registerUser = async (username, password) => {
     const ref = doc(db, "users", username);
     const snap = await getDoc(ref);
@@ -1568,7 +1377,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
     await setDoc(ref, {
       username,
-      password,
+      password,           // ⚠️ Solo demo, no seguro en producción
       state: DEFAULT_STATE,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
@@ -1576,6 +1385,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     console.log("Usuario registrado en Firestore:", username);
   };
 
+  // LOGIN: verifica credenciales
   window.checkUserCredentials = async (username, password) => {
     const ref = doc(db, "users", username);
     const snap = await getDoc(ref);
@@ -1585,6 +1395,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const data = snap.data();
     const storedPass = data.password;
 
+    // Para usuarios antiguos sin password, se acepta 123456
     const valid =
       (storedPass && storedPass === password) ||
       (!storedPass && password === '123456');
@@ -1595,6 +1406,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     return { ok:true };
   };
 
+  // Guarda datos básicos de login para cualquier usuario
   window.saveUserLogin = async (username) => {
     try{
       const ref = doc(db, "users", username);
@@ -1609,6 +1421,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
   };
 
+  // Guarda el estado completo del usuario
   window.saveUserState = async (username, state) => {
     try{
       const ref = doc(db, "users", username);
@@ -1623,6 +1436,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
   };
 
+  // Carga el estado del usuario desde Firestore y lo inyecta al front
   window.loadUserState = async (username) => {
     try{
       const ref = doc(db, "users", username);
@@ -1650,6 +1464,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
   };
 
+  // Si ya hay sesión recordada, cargar su estado al abrir
   try{
     const existingUser = localStorage.getItem('sessionUser');
     if(existingUser && window.loadUserState){
@@ -1662,46 +1477,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
   console.log("Firebase inicializado y listo (multiusuario con registro).");
 </script>
 <!-- ========= FIN FIREBASE ========= -->
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .then(reg => console.log('Service Worker registrado:', reg.scope))
-      .catch(err => console.error('Error al registrar Service Worker:', err));
-  });
-}
-</script>
-
-<!-- ========= BOTÓN INSTALAR APP (PWA) ========= -->
-<script>
-let deferredPrompt = null;
-const installBtn = document.getElementById('installAppBtn');
-
-// El navegador avisa cuando la PWA es instalable
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();          // evitamos el prompt automático
-  deferredPrompt = e;          // guardamos el evento
-  if (installBtn) {
-    installBtn.style.display = 'inline-flex';  // mostramos el botón
-  }
-});
-
-// Cuando el usuario hace clic en "Descargar / instalar app"
-if (installBtn) {
-  installBtn.addEventListener('click', async () => {
-    if (!deferredPrompt) return;
-
-    deferredPrompt.prompt();   // mostramos el cuadro de instalación
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log('Resultado de instalación:', outcome);
-
-    deferredPrompt = null;
-    installBtn.style.display = 'none'; // ocultamos el botón tras el intento
-  });
-}
-</script>
-<!-- ========= FIN BOTÓN INSTALAR APP ========= -->
 
 </body>
 </html>
