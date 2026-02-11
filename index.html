@@ -7,9 +7,22 @@
 
   <style>
   :root{
-    --bg:#0b0c10; --card:#111218; --soft:#1a1c24; --muted:#8b90a0; --text:#e8eaf2;
-    --brand:#5ea1ff; --brand-2:#6ee7f3; --ok:#46d39a; --warn:#ffd166; --danger:#ff6b6b;
-    --radius:16px; --shadow: 0 10px 30px rgba(0,0,0,.35);
+    --bg:#0b1220;
+    --card:#0f172a;
+    --soft:#111c33;
+    --muted:#97a3b8;
+    --text:#e7ecf6;
+    --border:rgba(255,255,255,.08);
+
+    --brand:#4f8cff;
+    --brand-2:#38bdf8;
+
+    --ok:#22c55e;
+    --warn:#f59e0b;
+    --danger:#ef4444;
+
+    --radius:16px;
+    --shadow: 0 12px 32px rgba(0,0,0,.35);
   }
   *{box-sizing:border-box}
   html,body{height:100%}
@@ -59,8 +72,7 @@
     border:1px solid rgba(60,72,105,.7);
     padding:6px 8px;
     border-radius:999px;
-    display:flex;
-    align-items:center;
+        align-items:center;
     justify-content:center;
     gap:4px;
     transition:background .2s ease, border-color .2s ease, transform .15s ease;
@@ -296,51 +308,234 @@
     .btn{width:100%;text-align:center;justify-content:center}
     .cta{flex-direction:column}
   }
-  </style>
+  
+  /* Secciones como "vistas" */
+  .section{scroll-margin-top:84px}
+  .view-hidden{display:none !important}
+  .nav a.active{background:#171923;color:var(--text);border:1px solid rgba(94,161,255,.25)}
+
+  /* Agenda mejorada */
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:var(--text)}
+  .chip.ok{border-color:rgba(70,211,154,.35);background:rgba(70,211,154,.10)}
+  .chip.warn{border-color:rgba(255,209,102,.35);background:rgba(255,209,102,.10)}
+  .chip.danger{border-color:rgba(255,107,107,.35);background:rgba(255,107,107,.10)}
+  .mini{font-size:12px;color:var(--muted)}
+  .timeline .item{gap:12px;align-items:flex-start}
+  .timeline .meta{margin-top:4px}
+  .checkline{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .checkline label{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
+  .checkline input{accent-color: var(--brand)}
+  .split{display:grid;grid-template-columns: 1.2fr .8fr;gap:12px}
+  @media (max-width: 900px){ .split{grid-template-columns:1fr} }
+
+  /* Modal recordatorio (sin transparencia) */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+  .modal-backdrop.show{display:flex}
+  .modal{width:min(560px, 100%);background:linear-gradient(180deg, rgba(17,18,24,1), rgba(17,18,24,1));border:1px solid rgba(60,72,105,.7);border-radius:18px;box-shadow: var(--shadow)}
+  .modal .head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid #1f2330}
+  .modal .body{padding:14px 16px}
+  .modal .foot{padding:14px 16px;border-top:1px solid #1f2330;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+  .modal h3{margin:0;font-size:16px}
+
+
+/* ========== LAYOUT: SIDEBAR NAV ========== */
+body{
+  /* en desktop dejamos espacio para el lateral */
+  padding-left: 0;
+}
+.sidebar{
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 280px;
+  background: linear-gradient(180deg, rgba(17,18,24,.98), rgba(11,12,16,.98));
+  border-right: 1px solid rgba(255,255,255,.08);
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 12px;
+  transform: translateX(-102%);
+  transition: transform .22s ease;
+  backdrop-filter: blur(10px);
+}
+.sidebar.open{ transform: translateX(0); }
+
+.sidebar-top{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+}
+.sidebar .brand{
+  display:flex; align-items:center; gap:10px;
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+.sidebar-menu{
+  list-style:none;
+  margin: 6px 0 0 0;
+  padding: 0;
+  display:flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow:auto;
+}
+.sidebar-menu li{ margin:0; padding:0; }
+.sidebar-menu a{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  color: rgba(232,234,242,.92);
+  text-decoration:none;
+  border: 1px solid rgba(255,255,255,.06);
+  background: rgba(26,28,36,.55);
+}
+.sidebar-menu a:hover{
+  background: rgba(94,161,255,.12);
+  border-color: rgba(94,161,255,.25);
+}
+.sidebar-menu a.active{
+  background: linear-gradient(90deg, rgba(94,161,255,.22), rgba(110,231,243,.14));
+  border-color: rgba(94,161,255,.35);
+  box-shadow: 0 10px 25px rgba(0,0,0,.25);
+}
+.sidebar-menu .sep{
+  height:1px;
+  background: rgba(255,255,255,.08);
+  margin: 8px 6px;
+  border-radius: 999px;
+}
+.nav-user{
+  display:block;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  color:#cbd5f5;
+  font-size: 14px;
+}
+.sidebar-foot{
+  margin-top:auto;
+  padding: 8px 10px;
+  opacity:.9;
+}
+.sidebar-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: 1100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease;
+}
+.sidebar-overlay.open{
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Desktop: sidebar siempre visible y el contenido se corre */
+@media (min-width: 980px){
+  body{ padding-left: 280px; }
+  .sidebar{ transform: translateX(0); }
+  .sidebar-toggle{ display:none; }
+  .sidebar-overlay{ display:none; }
+}
+
+/* Mobile: mejora del botón toggle dentro del sidebar */
+.sidebar-toggle{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+  color: var(--text);
+}
+
+/* Evita scroll del fondo cuando menú móvil está abierto */
+body.no-scroll{ overflow:hidden; }
+
+
+  /* Layout helpers */
+  .stack{display:grid;gap:14px}
+  .subcard{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);padding:14px;border-radius:14px}
+  .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+
+  /* --- Admin Pro UI --- */
+  .kanban{display:grid;grid-template-columns:repeat(6,minmax(220px,1fr));gap:12px;overflow:auto;padding-bottom:6px}
+  .kcol{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;min-height:180px}
+  .khead{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid var(--border);color:var(--muted);font-size:12px}
+  .kcount{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:999px;padding:2px 8px;color:var(--text)}
+  .klist{padding:10px;display:flex;flex-direction:column;gap:10px}
+  .kcard{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:14px;padding:10px}
+  .kcard .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+  .kcard .title{font-weight:700}
+  .kcard .meta{color:var(--muted);font-size:12px;margin-top:6px;line-height:1.35}
+  .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:rgba(255,255,255,.03);padding:3px 8px;border-radius:999px;color:var(--muted);font-size:12px}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:14px;flex-wrap:wrap}
+  @media (max-width: 1024px){
+    .kanban{grid-template-columns:repeat(2,minmax(240px,1fr))}
+  }
+  @media (max-width: 640px){
+    .kanban{grid-template-columns:repeat(1,minmax(240px,1fr))}
+  }
+</style>
 </head>
 
 <body>
-<nav class="nav">
-  <div class="container wrap">
+<nav class="sidebar" id="sidebar" aria-label="Navegación principal">
+  <div class="sidebar-top">
     <div class="brand">
       <span class="dot"></span> Agencia Digital
     </div>
 
-    <!-- Botón hamburguesa (móvil) BONITO -->
-    <button class="nav-toggle" id="navToggle" aria-label="Abrir menú">
+    <!-- Botón (móvil) -->
+    <button class="sidebar-toggle" id="navToggle" aria-label="Abrir menú">
       <div class="nav-toggle-inner">
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span>
       </div>
       <span class="nav-toggle-label">Menú</span>
     </button>
+  </div>
 
-    <ul id="navMenu">
-      <li><a href="#home">Inicio</a></li>
-      <li><a href="#panel">Panel</a></li>
-      <li><a href="#servicios">Servicios</a></li>
-      <li><a href="#agenda">Agenda</a></li>
-      <li><a href="#tareas">Tareas</a></li>
-      <li><a href="#contacto">Contacto</a></li>
+  <ul id="navMenu" class="sidebar-menu">
+    <li><a href="#home">Inicio</a></li>
+    <li><a href="#panel">Panel</a></li>
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#cotizaciones">Cotizaciones</a></li>
+    <li><a href="#agenda">Agenda</a></li>
+    <li><a href="#tareas">Tareas</a></li>
+    <li><a href="#clientes">Clientes</a></li>
+    <li><a href="#reportes">Reportes</a></li>
+    <li><a href="#contacto">Contacto</a></li>
 
-      <!-- Botón de login (oculto con sesión) -->
-      <li><a href="#" id="openLogin">Iniciar sesión</a></li>
+    <li class="sep"></li>
 
-      <!-- Sección usuario logueado -->
-      <li>
-        <span id="navUser" style="display:none; font-size:14px; color:#cbd5f5;">
-          <!-- Se rellena por JS -->
-        </span>
-      </li>
-      <li>
-        <a href="#" id="logoutLink" style="display:none;">Cerrar sesión</a>
-      </li>
-    </ul>
+    <!-- Botón de login (oculto con sesión) -->
+    <li><a href="#" id="openLogin">Iniciar sesión</a></li>
+
+    <!-- Usuario logueado -->
+    <li>
+      <span id="navUser" class="nav-user" style="display:none;">
+        <!-- Se rellena por JS -->
+      </span>
+    </li>
+    <li><a href="#" id="logoutLink" style="display:none;">Cerrar sesión</a></li>
+  </ul>
+
+  <div class="sidebar-foot">
+    <small class="muted">Atajos: usa Tab para navegar • Enter para activar</small>
   </div>
 </nav>
+<div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
 
-<header id="home" class="hero container">
+
+<header id="home" class="hero container" data-view>
   <div class="grid">
     <div class="card">
       <span class="badge">Agencia moderna — Diseño web • Redes • Publicidad • Capacitación</span>
@@ -368,9 +563,45 @@
   </div>
 </header>
 
-<section id="panel" class="section container">
+<section id="panel" class="section container" data-view>
   <h2>Panel de control</h2>
   <p class="lead">Resumen operativo: tareas, citas y catálogo.</p>
+  <div class="card pad" style="margin-top:14px">
+    <div class="section-head">
+      <div>
+        <h3 style="margin:0">Recordatorios</h3>
+        <div class="mini" style="margin-top:4px">Notificaciones en navegador (requiere permiso). Para “segundo plano” en teléfono, conviene publicarlo como PWA con Push.</div>
+      </div>
+      <button class="iconbtn" id="notif-permission" type="button">Permiso</button>
+    </div>
+
+    <div class="stack" style="margin-top:12px">
+      <div class="subcard">
+        <div class="checkline" style="justify-content:space-between;gap:10px;flex-wrap:wrap">
+          <label style="display:flex;align-items:center;gap:10px"><input type="checkbox" id="notif-enabled" /> Activar recordatorios</label>
+          <span class="mini" id="notif-status"></span>
+        </div>
+
+        <div class="row" style="margin-top:12px">
+          <div>
+            <label>Avisar antes (min)</label>
+            <input class="input" id="notif-lead" type="number" min="1" step="1" value="15"/>
+          </div>
+          <div>
+            <label>Resumen diario (hora)</label>
+            <input class="input" id="notif-digest" type="time" value="20:00"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="subcard">
+        <strong style="font-size:14px">Próximas reuniones</strong>
+        <div class="mini" style="margin-top:4px">Aquí verás tus reuniones en estado <b>Pendiente</b>, <b>Confirmada</b> o <b>Realizada</b>.</div>
+        <div id="apptTimeline" class="list timeline" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="grid-3">
     <div class="card kpi">
       <small>Tareas pendientes</small>
@@ -393,7 +624,7 @@
 <hr class="sep container" />
 
 <!-- ====== SERVICIOS + COTIZADOR ====== -->
-<section id="servicios" class="section container">
+<section id="servicios" class="section container" data-view>
   <h2>Servicios</h2>
   <p class="lead">Administra tu catálogo y arma cotizaciones seleccionando los servicios necesarios.</p>
   <div class="grid-2">
@@ -466,64 +697,133 @@
       </div>
       <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:12px;align-items:baseline;flex-wrap:wrap">
         <div><strong>Total:</strong> <span id="quote-total" style="font-size:16px"></span></div>
+        <button class="btn" id="quote-to-pipeline" type="button">Crear cotización</button>
         <button class="iconbtn" id="quote-copy" type="button">Copiar resumen</button>
         <button class="iconbtn danger" id="quote-clear" type="button">Limpiar cotización</button>
       </div>
     </div>
   </div>
+
 </section>
 
 <hr class="sep container" />
 
-<!-- ====== AGENDA ====== -->
-<section id="agenda" class="section container">
-  <h2>Agenda y calendario</h2>
-  <p class="lead">Programa compromisos con fecha, hora y notas. Visualiza en calendario y lista.</p>
-  <div class="grid-2">
-    <div class="card pad">
-      <form id="apptForm" class="fadein">
-        <div class="row">
-          <div>
-            <label>Título</label>
-            <input class="input" id="appt-title" placeholder="Reunión de brief" required />
-          </div>
-          <div>
-            <label>Fecha y hora</label>
-            <input class="input" id="appt-datetime" type="datetime-local" required />
-          </div>
-        </div>
-        <label>Notas</label>
-        <textarea id="appt-notes" class="input" rows="3" placeholder="Puntos a tratar..."></textarea>
-        <div class="actions" style="margin-top:10px">
-          <button type="submit" class="btn">Agregar compromiso</button>
-          <button type="reset" class="iconbtn">Limpiar</button>
-        </div>
-      </form>
-      <div style="margin-top:14px">
-        <strong>Próximos compromisos</strong>
-        <div id="apptList" class="list"></div>
+<!-- ====== COTIZACIONES (PIPELINE) ====== -->
+<section id="cotizaciones" class="section container" data-view>
+  <div class="section-head">
+    <div>
+      <h2 style="margin:0">Cotizaciones</h2>
+      <p class="lead" style="margin:6px 0 0">Pipeline comercial: crea, envía, negocia, aprueba y registra pagos.</p>
+    </div>
+    <div class="actions">
+      <button class="btn" id="openQuoteModal" type="button">+ Nueva cotización</button>
+      <button class="iconbtn" id="exportQuotesCsv" type="button">Exportar CSV</button>
+    </div>
+  </div>
+
+  <div class="subcard" style="margin-top:12px">
+    <div class="row">
+      <div>
+        <label>Buscar</label>
+        <input id="quote-search" class="input" placeholder="Cliente, servicio, estado..." />
+      </div>
+      <div>
+        <label>Estado</label>
+        <select id="quote-status-filter" class="input">
+          <option value="all">Todos</option>
+          <option value="draft">Borrador</option>
+          <option value="sent">Enviada</option>
+          <option value="negotiation">Negociación</option>
+          <option value="approved">Aprobada</option>
+          <option value="paid">Pagada</option>
+          <option value="rejected">Rechazada</option>
+        </select>
       </div>
     </div>
+  </div>
+
+  <div class="kanban" style="margin-top:14px">
+    <div class="kcol" data-k="draft">
+      <div class="khead"><span>Borrador</span><span class="kcount" id="kc-draft">0</span></div>
+      <div class="klist" id="k-draft"></div>
+    </div>
+    <div class="kcol" data-k="sent">
+      <div class="khead"><span>Enviada</span><span class="kcount" id="kc-sent">0</span></div>
+      <div class="klist" id="k-sent"></div>
+    </div>
+    <div class="kcol" data-k="negotiation">
+      <div class="khead"><span>Negociación</span><span class="kcount" id="kc-negotiation">0</span></div>
+      <div class="klist" id="k-negotiation"></div>
+    </div>
+    <div class="kcol" data-k="approved">
+      <div class="khead"><span>Aprobada</span><span class="kcount" id="kc-approved">0</span></div>
+      <div class="klist" id="k-approved"></div>
+    </div>
+    <div class="kcol" data-k="paid">
+      <div class="khead"><span>Pagada</span><span class="kcount" id="kc-paid">0</span></div>
+      <div class="klist" id="k-paid"></div>
+    </div>
+    <div class="kcol" data-k="rejected">
+      <div class="khead"><span>Rechazada</span><span class="kcount" id="kc-rejected">0</span></div>
+      <div class="klist" id="k-rejected"></div>
+    </div>
+  </div>
+
+  <div class="mini" style="margin-top:10px">
+    Tip: puedes crear una cotización desde <b>Servicios</b> seleccionando items y luego “Nueva cotización”.
+  </div>
+</section>
+
+<hr class="sep container" />
+
+<!-- ====== AGENDA<!-- ====== AGENDA ====== -->
+<section id="agenda" class="section container" data-view>
+  <h2>Agenda y calendario</h2>
+  <p class="lead">Crea reuniones con detalles claros, haz seguimiento y recibe recordatorios.</p>
+
+  <div class="grid-2">
+    <!-- Calendario -->
     <div class="card pad">
       <div class="calendar">
         <div class="cal-head">
-          <button class="iconbtn" id="prevMonth" type="button">◀</button>
+          <button class="iconbtn" id="prevMonth" type="button" aria-label="Mes anterior">◀</button>
           <div class="month" id="calLabel">Mes Año</div>
-          <button class="iconbtn" id="nextMonth" type="button">▶</button>
+          <button class="iconbtn" id="nextMonth" type="button" aria-label="Mes siguiente">▶</button>
         </div>
         <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px;color:#9aa1b5;font-size:11px">
           <div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div>
         </div>
-        <div id="calGrid" class="cal-grid"></div>
+        <div id="calGrid" class="cal-grid" aria-label="Calendario mensual"></div>
+      </div>
+      <div class="mini" style="margin-top:10px">
+        Tip: haz clic en un día para ver solo las reuniones de esa fecha.
       </div>
     </div>
+
+        <!-- Panel derecho: reuniones -->
+    <div class="card pad">
+      <div class="section-head">
+        <div>
+          <strong style="display:block">Reuniones</strong>
+          <div class="mini" style="margin-top:4px">Crea, confirma y marca como realizada. Los recordatorios se configuran en el inicio.</div>
+        </div>
+        <button class="btn" id="openApptModal" type="button">+ Nueva reunión</button>
+      </div>
+
+      <div class="subcard" style="margin-top:12px">
+        <strong style="font-size:14px">Próximas reuniones</strong>
+        <div class="mini" style="margin-top:4px">Haz check-in: <b>Pendiente</b> → <b>Confirmada</b> → <b>Realizada</b>.</div>
+        <div id="apptTimelineAgenda" class="list timeline" style="margin-top:10px"></div>
+      </div>
+    </div>
+
   </div>
 </section>
 
 <hr class="sep container" />
 
 <!-- ====== TAREAS ====== -->
-<section id="tareas" class="section container">
+<section id="tareas" class="section container" data-view>
   <h2>Gestor de tareas y proyectos</h2>
   <p class="lead">Organiza entregas, campañas y pendientes. Marca como completadas y filtra por vencimiento.</p>
   <div class="grid-2">
@@ -581,9 +881,87 @@
       <div id="taskList" class="list"></div>
     </div>
   </div>
+
 </section>
 
-<footer id="contacto" class="container">
+<hr class="sep container" />
+
+<!-- ====== CLIENTES ====== -->
+<section id="clientes" class="section container" data-view>
+  <div class="section-head">
+    <div>
+      <h2 style="margin:0">Clientes</h2>
+      <p class="lead" style="margin:6px 0 0">Mini CRM: organiza prospectos y clientes, con historial de cotizaciones, tareas y reuniones.</p>
+    </div>
+    <button class="btn" id="openClientModal" type="button">+ Nuevo cliente</button>
+  </div>
+
+  <div class="subcard" style="margin-top:12px">
+    <div class="row">
+      <div>
+        <label>Buscar</label>
+        <input id="client-search" class="input" placeholder="Nombre, empresa, teléfono, email..." />
+      </div>
+      <div>
+        <label>Segmento</label>
+        <select id="client-stage" class="input">
+          <option value="all">Todos</option>
+          <option value="prospecto">Prospecto</option>
+          <option value="activo">Cliente activo</option>
+          <option value="inactivo">Inactivo</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div id="clientsList" class="list" style="margin-top:14px"></div>
+</section>
+
+<hr class="sep container" />
+
+<!-- ====== REPORTES ====== -->
+<section id="reportes" class="section container" data-view>
+  <h2>Reportes</h2>
+  <p class="lead">Métricas rápidas para tomar decisiones (ventas, operación y cumplimiento).</p>
+
+  <div class="grid-3">
+    <div class="card kpi">
+      <small>Cotizaciones (30 días)</small>
+      <h3 id="rep-quotes-30">0</h3>
+      <span class="tag">actividad</span>
+    </div>
+    <div class="card kpi">
+      <small>Tasa de cierre</small>
+      <h3 id="rep-close-rate">0%</h3>
+      <span class="tag">aprobadas/pagadas</span>
+    </div>
+    <div class="card kpi">
+      <small>Tareas vencidas</small>
+      <h3 id="rep-overdue">0</h3>
+      <span class="tag">operación</span>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top:14px">
+    <div class="card pad">
+      <div class="section-head">
+        <strong>Top servicios cotizados</strong>
+        <button class="iconbtn" id="rep-refresh" type="button">Actualizar</button>
+      </div>
+      <div id="rep-top-services" class="list" style="margin-top:10px"></div>
+    </div>
+    <div class="card pad">
+      <div class="section-head">
+        <strong>Agenda próxima (7 días)</strong>
+        <button class="iconbtn" id="rep-export-ics" type="button">Exportar .ICS</button>
+      </div>
+      <div id="rep-next-appts" class="list" style="margin-top:10px"></div>
+      <div class="mini" style="margin-top:10px">El archivo .ICS permite importar tu agenda en Google Calendar/Apple Calendar.</div>
+    </div>
+  </div>
+</section>
+
+<footer id="contacto" class="container" data-view>
   <div class="foot">
     <div>
       <strong>Agencia Digital</strong>
@@ -611,6 +989,127 @@
     © <span id="year"></span> Agencia Digital — Todos los derechos reservados.
   </p>
 </footer>
+
+
+<!-- ========= MODAL NUEVA COTIZACIÓN ========= -->
+<div id="quoteBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="quoteModalTitle" style="display:none">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div id="quoteModalTitle" class="title">Nueva cotización</div>
+        <div class="mini" style="margin-top:4px">Crea una cotización con estado <b>Borrador</b>. Luego podrás copiar mensaje para WhatsApp/Email y moverla de etapa.</div>
+      </div>
+      <button class="iconbtn" id="quoteClose" type="button">✕</button>
+    </div>
+
+    <form id="quoteForm" class="modal-body">
+      <div class="row">
+        <div>
+          <label>Cliente</label>
+          <input class="input" id="q-client" list="clientsDatalist" placeholder="Ej. Carlos Pérez" required />
+          <datalist id="clientsDatalist"></datalist>
+        </div>
+        <div>
+          <label>Teléfono (opcional)</label>
+          <input class="input" id="q-phone" placeholder="+57 300 000 0000" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Validez (días)</label>
+          <input class="input" id="q-valid" type="number" min="1" step="1" value="7" />
+        </div>
+        <div>
+          <label>IVA</label>
+          <select class="input" id="q-iva">
+            <option value="inherit">Usar cotizador</option>
+            <option value="on">Incluir 19%</option>
+            <option value="off">Sin IVA</option>
+          </select>
+        </div>
+      </div>
+
+      <label>Notas / Alcance</label>
+      <textarea id="q-notes" class="input" rows="3" placeholder="Alcance, condiciones, formas de pago..."></textarea>
+
+      <div class="subcard" style="margin-top:12px">
+        <strong style="font-size:14px">Items</strong>
+        <div class="mini" style="margin-top:4px">Se toman de la selección del cotizador (Servicios). Puedes ajustar quitando/añadiendo desde allí.</div>
+        <div id="q-items" class="list" style="margin-top:10px"></div>
+        <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:10px;align-items:baseline;flex-wrap:wrap">
+          <div><strong>Total:</strong> <span id="q-total" style="font-size:16px"></span></div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn" type="submit">Crear cotización</button>
+        <button class="iconbtn" id="quoteCancel" type="button">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ========= MODAL NUEVO CLIENTE ========= -->
+<div id="clientBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="clientModalTitle" style="display:none">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div id="clientModalTitle" class="title">Nuevo cliente</div>
+        <div class="mini" style="margin-top:4px">Registra datos básicos para cotizar y dar seguimiento.</div>
+      </div>
+      <button class="iconbtn" id="clientClose" type="button">✕</button>
+    </div>
+
+    <form id="clientForm" class="modal-body">
+      <div class="row">
+        <div>
+          <label>Nombre</label>
+          <input class="input" id="c-name" placeholder="Ej. Carlos Pérez" required />
+        </div>
+        <div>
+          <label>Empresa (opcional)</label>
+          <input class="input" id="c-company" placeholder="Ej. Pérez Group" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Teléfono</label>
+          <input class="input" id="c-phone" placeholder="+57 300 000 0000" />
+        </div>
+        <div>
+          <label>Email</label>
+          <input class="input" id="c-email" type="email" placeholder="correo@empresa.com" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Segmento</label>
+          <select class="input" id="c-stage">
+            <option value="prospecto">Prospecto</option>
+            <option value="activo">Cliente activo</option>
+            <option value="inactivo">Inactivo</option>
+          </select>
+        </div>
+        <div>
+          <label>Etiquetas</label>
+          <input class="input" id="c-tags" placeholder="web, capacitación, soporte..." />
+        </div>
+      </div>
+
+      <label>Notas</label>
+      <textarea id="c-notes" class="input" rows="3" placeholder="Preferencias, dolores, próximos pasos..."></textarea>
+
+      <div class="modal-actions">
+        <button class="btn" type="submit">Guardar cliente</button>
+        <button class="iconbtn" id="clientCancel" type="button">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 
 <!-- ========= MODAL LOGIN ========= -->
 <div id="loginModal" style="
@@ -700,13 +1199,24 @@ const $ = (q,root=document)=>root.querySelector(q);
 const $$ = (q,root=document)=>Array.from(root.querySelectorAll(q));
 const COP = new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0});
 const fmtMoney = n => COP.format(n||0);
-const todayStr = ()=> new Date().toISOString().slice(0,10);
 
+function escapeHtml(str=''){
+  return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+}
+
+// Fechas en local (evita desfaces por UTC en Colombia)
+const pad2 = n => String(n).padStart(2,'0');
+const localISODate = (d=new Date()) => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+const todayStr = ()=> localISODate();
 /* ---------- Estado en memoria (solo Firestore) ---------- */
 let services = [];
 let appts    = [];
 let tasks    = [];
+let clients  = [];
+let quotes   = [];
 let quoteSel = new Set();
+let prefs    = { currency:'COP', digestTime:'20:00', leadMinutes:15, notificationsEnabled:false };
+let calRef = new Date(); // referencia del mes mostrado en calendario
 
 /* ---------- Sync con Firestore ---------- */
 function getCurrentUser(){
@@ -721,6 +1231,9 @@ function syncUserState(){
       services,
       appts,
       tasks,
+      clients,
+      quotes,
+      prefs,
       quoteSel: Array.from(quoteSel || [])
     });
   }
@@ -730,12 +1243,24 @@ function hydrateState(state){
   services = Array.isArray(state?.services) ? state.services : [];
   appts    = Array.isArray(state?.appts)    ? state.appts    : [];
   tasks    = Array.isArray(state?.tasks)    ? state.tasks    : [];
+  clients  = Array.isArray(state?.clients) ? state.clients  : [];
+  quotes   = Array.isArray(state?.quotes)  ? state.quotes   : [];
+  prefs    = typeof state?.prefs === 'object' && state.prefs ? { ...prefs, ...state.prefs } : prefs;
   quoteSel = new Set(Array.isArray(state?.quoteSel) ? state.quoteSel : []);
+
+  // Migraciones suaves (por si había datos antiguos)
+  tasks = tasks.map(t=> ({ status: t.status || (t.done ? 'done':'todo'), labels: t.labels || '', ...t }));
+
   renderServices();
+  renderClients();
+  renderQuotes();
   renderApptList();
   renderTasks();
   refreshKPIs();
   buildCalendar();
+  refreshReports();
+  hydratePrefsUI();
+  hydrateClientsDatalist();
 }
 window.hydrateState = hydrateState;
 
@@ -911,8 +1436,818 @@ quoteCopyBtn?.addEventListener('click', async ()=>{
   }
 });
 
+
+/* ---------- Vistas por sección (Panel/Servicios/Agenda/Tareas/Contacto) ---------- */
+function showSection(id){
+  const views = $$('[data-view]');
+  views.forEach(v=>v.classList.add('view-hidden'));
+  const target = document.getElementById(id);
+  if(target){ target.classList.remove('view-hidden'); }
+  // activar nav
+  $$('#navMenu a[href^="#"]').forEach(a=>{
+    const href = a.getAttribute('href') || '';
+    a.classList.toggle('active', href === `#${id}`);
+  });
+  // accesibilidad: enfocar el título
+  const h = target?.querySelector('h1, h2');
+  if(h){ h.setAttribute('tabindex','-1'); h.focus({preventScroll:true}); }
+  window.scrollTo({top:0, behavior:'smooth'});
+  history.replaceState(null,'',`#${id}`);
+}
+function initSectionViews(){
+  // si vienes con hash, abre esa sección; si no, home
+  const initial = (location.hash || '#home').slice(1);
+  // oculta todas al inicio
+  $$('[data-view]').forEach(v=>v.classList.add('view-hidden'));
+  showSection(document.getElementById(initial)?initial:'home');
+
+  $$('#navMenu a[href^="#"]').forEach(a=>{
+    a.addEventListener('click', (e)=>{
+      e.preventDefault();
+      const id = (a.getAttribute('href')||'#home').slice(1);
+      showSection(id);
+      // cerrar sidebar móvil si está abierto
+      if(typeof closeSidebar === 'function'){ closeSidebar(); }
+      else{
+        document.getElementById('navMenu')?.classList.remove('open');
+        document.getElementById('navToggle')?.classList.remove('open');
+      }
+    });
+  });
+}
+
+/* ---------- Notificaciones y recordatorios de agenda ---------- */
+function getNotifPrefs(){
+  try{
+    const raw = localStorage.getItem('agendaNotifPrefs');
+    return raw ? JSON.parse(raw) : {};
+  }catch{ return {}; }
+}
+function setNotifPrefs(p){
+  try{ localStorage.setItem('agendaNotifPrefs', JSON.stringify(p||{})); }catch{}
+}
+function initAgendaNotifications(){
+  const enabled = $('#notif-enabled');
+  const lead    = $('#notif-lead');
+  const digest  = $('#notif-digest');
+  const permBtn = $('#notif-permission');
+  const status  = $('#notif-status');
+
+  if(!enabled || !lead || !digest || !permBtn || !status) return;
+
+  const prefs = getNotifPrefs();
+  enabled.checked = !!prefs.enabled;
+  lead.value = String(prefs.leadMin ?? 15);
+  digest.value = prefs.digestTime ?? '20:00';
+
+  function refreshStatus(){
+    const perm = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported';
+    if(perm==='unsupported') status.textContent = 'Este navegador no soporta notificaciones.';
+    else if(perm==='granted') status.textContent = enabled.checked ? 'Notificaciones activas ✅' : 'Permiso concedido (actívalas con el switch).';
+    else if(perm==='denied') status.textContent = 'Notificaciones bloqueadas. Habilítalas en la configuración del navegador.';
+    else status.textContent = 'Pulsa “Permiso” para permitir notificaciones.';
+  }
+  refreshStatus();
+
+  permBtn.addEventListener('click', async ()=>{
+    if(typeof Notification === 'undefined'){ refreshStatus(); return; }
+    try{ await Notification.requestPermission(); }catch{}
+    refreshStatus();
+  });
+
+  function save(){
+    const p = {
+      enabled: !!enabled.checked,
+      leadMin: Math.max(1, Number(lead.value||15)),
+      digestTime: digest.value || '20:00'
+    };
+    setNotifPrefs(p);
+    refreshStatus();
+  }
+  enabled.addEventListener('change', save);
+  lead.addEventListener('change', save);
+  digest.addEventListener('change', save);
+}
+
+// Loop central: avisos "X minutos antes" + resumen diario de mañana (digest)
+function startReminderLoop(){
+  const KEY = 'agendaReminderState';
+  function getState(){
+    try{ return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; }catch{ return {}; }
+  }
+  function setState(s){
+    try{ localStorage.setItem(KEY, JSON.stringify(s||{})); }catch{}
+  }
+  function canNotify(){
+    if(typeof Notification === 'undefined') return false;
+    const prefs = getNotifPrefs();
+    return !!prefs.enabled && Notification.permission === 'granted';
+  }
+  function notify(title, body){
+    try{
+      new Notification(title, { body });
+    }catch{}
+  }
+  function isSameLocalDay(a,b){
+    return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+  }
+  function localYMD(d){
+    const y=d.getFullYear();
+    const m=String(d.getMonth()+1).padStart(2,'0');
+    const day=String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${day}`;
+  }
+  function timeToMinutes(t){ // "HH:MM"
+    const [h,m]=String(t||'').split(':').map(Number);
+    if(Number.isFinite(h)&&Number.isFinite(m)) return h*60+m;
+    return 20*60;
+  }
+
+  function tick(){
+    const prefs = getNotifPrefs();
+    const now = new Date();
+    const state = getState();
+
+    // --- Avisos "antes de"
+    const leadMin = Math.max(1, Number(prefs.leadMin ?? 15));
+    const leadMs = leadMin*60*1000;
+
+    // Reuniones futuras no realizadas
+    const upcoming = appts
+      .filter(a=>!a.done)
+      .map(a=>({a, start:new Date(a.datetime)}))
+      .filter(x=>Number.isFinite(x.start.getTime()))
+      .sort((x,y)=>x.start-y.start);
+
+    if(prefs.enabled){
+      for(const {a,start} of upcoming){
+        const ms = start - now;
+        if(ms <= leadMs && ms > 0){
+          const key = `lead:${a.id}`;
+          if(!state[key]){
+            // Modal siempre (UI), y notificación si hay permiso
+            showReminderModal(a);
+            if(canNotify()){
+              const when = start.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+              const who = a.with ? ` con ${a.with}` : '';
+              notify('Reunión próxima', `${a.title || 'Reunión'}${who} — ${when}`);
+            }
+            state[key] = now.toISOString();
+            setState(state);
+          }
+        }
+      }
+    }
+
+    // --- Digest: hoy en la noche "mañana tienes..."
+    // Enviar 1 vez por día, cuando llegue la hora configurada
+    if(prefs.enabled){
+      const digestMin = timeToMinutes(prefs.digestTime ?? '20:00');
+      const nowMin = now.getHours()*60 + now.getMinutes();
+      const todayKey = `digest:${localYMD(now)}`;
+
+      if(nowMin >= digestMin && !state[todayKey]){
+        const tomorrow = new Date(now);
+        tomorrow.setDate(tomorrow.getDate()+1);
+        const items = upcoming.filter(x=>isSameLocalDay(x.start, tomorrow));
+
+        if(items.length){
+          const lines = items.slice(0,8).map(x=>{
+            const hh = x.start.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+            const t = x.a.title || 'Reunión';
+            const w = x.a.with ? ` • ${x.a.with}` : '';
+            return `${hh} — ${t}${w}`;
+          });
+          const body = lines.join('\n') + (items.length>8 ? `\n+${items.length-8} más` : '');
+          if(canNotify()){
+            notify('Recordatorio: reuniones de mañana', body);
+          }
+          // También lo reflejamos en UI: abre el panel (opcional) y muestra un modal suave
+          // (sin forzar navegación)
+        }
+        state[todayKey] = now.toISOString();
+        setState(state);
+      }
+    }
+  }
+
+  // primer tick + intervalo
+  tick();
+  setInterval(tick, 30000);
+}
+
+function showReminderModal(appt){
+  const back = $('#reminderBackdrop');
+  const when = $('#reminderWhen');
+  const body = $('#reminderBody');
+  if(!back || !when || !body) return;
+
+  const start = new Date(appt.datetime);
+  when.textContent = start.toLocaleString('es-CO',{dateStyle:'full',timeStyle:'short'});
+
+  const pieces = [];
+  if(appt.with) pieces.push(`<div><b>Con quién:</b> ${escapeHtml(appt.with)}</div>`);
+  if(appt.topic) pieces.push(`<div><b>Tema:</b> ${escapeHtml(appt.topic)}</div>`);
+  if(appt.location) pieces.push(`<div><b>Lugar / enlace:</b> ${escapeHtml(appt.location)}</div>`);
+  if(appt.notes) pieces.push(`<div style="margin-top:8px"><b>Notas:</b><div class="mini" style="margin-top:4px">${escapeHtml(appt.notes)}</div></div>`);
+  body.innerHTML = `<div><b>${escapeHtml(appt.title)}</b></div>` + pieces.join('');
+
+  back.classList.add('show');
+  $('#reminderOk')?.focus({preventScroll:true});
+}
+function closeReminderModal(){
+  $('#reminderBackdrop')?.classList.remove('show');
+}
+$('#reminderClose')?.addEventListener('click', closeReminderModal);
+$('#reminderOk')?.addEventListener('click', closeReminderModal);
+
+/* ---------- Modal: Nueva reunión ---------- */
+function openApptModal(prefill={}){
+  $('#apptBackdrop')?.classList.add('show');
+  // Prefill rápido (desde Clientes / atajos)
+  if(prefill?.with) $('#appt-with').value = prefill.with;
+  if(prefill?.topic) $('#appt-topic').value = prefill.topic;
+  if(prefill?.title) $('#appt-title').value = prefill.title;
+  // Si vienes desde otra sección, deja la experiencia directa
+  setTimeout(()=> $('#appt-title')?.focus({preventScroll:true}), 50);
+}
+function closeApptModal(){
+  $('#apptBackdrop')?.classList.remove('show');
+}
+function setApptModalMode(mode){
+  const title = $('#apptModalTitle');
+  const hint  = $('#apptModalHint');
+  if(mode==='edit'){
+    if(title) title.textContent = 'Editar reunión';
+    if(hint)  hint.textContent  = 'Actualiza los datos. Se guardará como una sola reunión.';
+  }else{
+    if(title) title.textContent = 'Nueva reunión';
+    if(hint)  hint.textContent  = 'Completa los datos para agendar. Luego podrás confirmar o marcar como realizada.';
+  }
+}
+
+$('#openApptModal')?.addEventListener('click', ()=>{
+  setApptModalMode('new');
+  $('#apptForm')?.reset();
+  $('#appt-duration').value = 30;
+  openApptModal();
+});
+$('#apptClose')?.addEventListener('click', closeApptModal);
+$('#apptBackdrop')?.addEventListener('click', (e)=>{ if(e.target?.id==='apptBackdrop') closeApptModal(); });
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeApptModal(); });
+
+function handleApptTimelineClick(e){
+  const delId  = e.target?.dataset?.del;
+  const editId = e.target?.dataset?.edit;
+  if(delId){
+    if(!confirm('¿Eliminar esta reunión?')) return;
+    appts = appts.filter(a=>a.id!==delId);
+    renderApptList(); syncUserState();
+    return;
+  }
+  if(editId){
+    const a = appts.find(x=>x.id===editId); if(!a) return;
+    setApptModalMode('edit');
+    $('#appt-title').value=a.title||'';
+    $('#appt-datetime').value=a.datetime||'';
+    $('#appt-with').value=a.with||'';
+    $('#appt-topic').value=a.topic||'';
+    $('#appt-duration').value=Number(a.duration||30);
+    $('#appt-location').value=a.location||'';
+    $('#appt-notes').value=a.notes||'';
+    // Reemplazo simple: quitamos la original, al guardar se crea la nueva (mismo comportamiento previo)
+    appts = appts.filter(x=>x.id!==editId);
+    renderApptList(); syncUserState();
+    openApptModal();
+    return;
+  }
+}
+function handleApptTimelineChange(e){
+  const cid = e.target?.dataset?.confirm;
+  const did = e.target?.dataset?.complete;
+  if(cid){
+    const a = appts.find(x=>x.id===cid); if(!a) return;
+    a.confirmed = !!e.target.checked;
+    if(!a.confirmed && a.completed) a.completed = false;
+    renderApptList(); syncUserState();
+  }
+  if(did){
+    const a = appts.find(x=>x.id===did); if(!a) return;
+    a.completed = !!e.target.checked;
+    if(a.completed) a.confirmed = true;
+    renderApptList(); syncUserState();
+  }
+}
+
+
+// Listeners para timelines (Inicio y Agenda)
+$('#apptTimeline')?.addEventListener('click', handleApptTimelineClick);
+$('#apptTimelineAgenda')?.addEventListener('click', handleApptTimelineClick);
+$('#apptTimeline')?.addEventListener('change', handleApptTimelineChange);
+$('#apptTimelineAgenda')?.addEventListener('change', handleApptTimelineChange);
+
+// Navegación del calendario
+$('#prevMonth')?.addEventListener('click', ()=>{
+  calRef.setMonth(calRef.getMonth()-1);
+  buildCalendar();
+});
+$('#nextMonth')?.addEventListener('click', ()=>{
+  calRef.setMonth(calRef.getMonth()+1);
+  buildCalendar();
+});
+
+
+
+
+
+
+/* ---------- Clientes ---------- */
+function hydrateClientsDatalist(){
+  const dl = document.getElementById('clientsDatalist');
+  if(!dl) return;
+  dl.innerHTML = '';
+  clients
+    .slice()
+    .sort((a,b)=> (a.name||'').localeCompare(b.name||''))
+    .forEach(c=>{
+      const opt = document.createElement('option');
+      opt.value = c.name;
+      dl.appendChild(opt);
+    });
+}
+
+function renderClients(){
+  const wrap = document.getElementById('clientsList');
+  if(!wrap) return;
+
+  const q = (document.getElementById('client-search')?.value || '').trim().toLowerCase();
+  const stage = document.getElementById('client-stage')?.value || 'all';
+
+  const list = clients
+    .filter(c=> stage==='all' ? true : (c.stage||'prospecto')===stage)
+    .filter(c=>{
+      if(!q) return true;
+      const hay = `${c.name||''} ${c.company||''} ${c.phone||''} ${c.email||''} ${c.tags||''}`.toLowerCase();
+      return hay.includes(q);
+    })
+    .sort((a,b)=> (a.name||'').localeCompare(b.name||''));
+
+  wrap.innerHTML = '';
+
+  if(list.length===0){
+    wrap.innerHTML = `<div class="subcard"><div class="mini">No hay clientes aún. Crea uno con “Nuevo cliente”.</div></div>`;
+    return;
+  }
+
+  list.forEach(c=>{
+    const qCount = quotes.filter(qt=> (qt.client||'') === (c.name||'')).length;
+    const nextAppt = appts
+      .filter(a=> (a.with||'') === (c.name||''))
+      .map(a=> ({...a, t: new Date(a.datetime).getTime()}))
+      .filter(a=> a.t >= Date.now())
+      .sort((a,b)=> a.t-b.t)[0];
+
+    const el = document.createElement('div');
+    el.className = 'item fadein';
+    el.innerHTML = `
+      <div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <strong>${esc(c.name||'')}</strong>
+          <span class="pill">${esc((c.stage||'prospecto').replace('prospecto','Prospecto').replace('activo','Cliente activo').replace('inactivo','Inactivo'))}</span>
+          ${c.company? `<span class="pill">${esc(c.company)}</span>`:''}
+          ${c.tags? `<span class="pill">${esc(c.tags)}</span>`:''}
+        </div>
+        <div class="meta">
+          ${c.phone? `📞 ${esc(c.phone)} `:''}
+          ${c.email? `· ✉️ ${esc(c.email)} `:''}
+          ${c.notes? `· ${esc(c.notes)}`:''}
+        </div>
+        <div class="mini" style="margin-top:6px">
+          Cotizaciones: <b>${qCount}</b>
+          ${nextAppt? ` · Próxima reunión: <b>${new Date(nextAppt.datetime).toLocaleString('es-CO',{dateStyle:'medium',timeStyle:'short'})}</b>`:''}
+        </div>
+      </div>
+      <div class="actions">
+        <button class="iconbtn" data-client-quote="${c.id}">Cotizar</button>
+        <button class="iconbtn" data-client-appt="${c.id}">Reunión</button>
+        <button class="iconbtn" data-client-task="${c.id}">Tarea</button>
+        <button class="iconbtn" data-client-edit="${c.id}">Editar</button>
+        <button class="iconbtn danger" data-client-del="${c.id}">Eliminar</button>
+      </div>`;
+    wrap.appendChild(el);
+  });
+
+  hydrateClientsDatalist();
+}
+
+/* ---------- Cotizaciones ---------- */
+const QUOTE_STATUS = [
+  {k:'draft', label:'Borrador'},
+  {k:'sent', label:'Enviada'},
+  {k:'negotiation', label:'Negociación'},
+  {k:'approved', label:'Aprobada'},
+  {k:'paid', label:'Pagada'},
+  {k:'rejected', label:'Rechazada'},
+];
+
+function quoteStatusLabel(k){
+  return (QUOTE_STATUS.find(x=>x.k===k)?.label) || '—';
+}
+
+function getQuoteItems(){
+  return services.filter(s=> quoteSel.has(s.id)).map(s=> ({ id:s.id, name:s.name, cat:s.cat, price:Number(s.price||0) }));
+}
+
+function computeQuoteTotal(items, ivaOn){
+  const subtotal = (items||[]).reduce((a,b)=> a+Number(b.price||0), 0);
+  const iva = ivaOn ? subtotal*0.19 : 0;
+  return { subtotal, iva, total: subtotal+iva };
+}
+
+function renderQuoteModalPreview(){
+  const items = getQuoteItems();
+  const itemsWrap = document.getElementById('q-items');
+  if(itemsWrap){
+    itemsWrap.innerHTML = items.length
+      ? items.map(it=> `
+          <div class="item">
+            <div><strong>${esc(it.name)}</strong> <span class="badge-cat">${esc(it.cat||'')}</span></div>
+            <div class="actions"><span class="price">${fmtMoney(it.price)}</span></div>
+          </div>`).join('')
+      : `<div class="subcard"><div class="mini">No hay servicios seleccionados. Ve a <b>Servicios</b> y marca los que quieras cotizar.</div></div>`;
+  }
+
+  const ivaSel = document.getElementById('q-iva')?.value || 'inherit';
+  const ivaOn = ivaSel==='inherit'
+    ? !!document.getElementById('quote-iva')?.checked
+    : (ivaSel==='on');
+
+  const { total } = computeQuoteTotal(items, ivaOn);
+  const totalEl = document.getElementById('q-total');
+  if(totalEl) totalEl.textContent = fmtMoney(total);
+}
+
+function openQuoteModal(prefillClientName=''){
+  const back = document.getElementById('quoteBackdrop');
+  if(!back) return;
+  back.style.display = 'flex';
+  document.body.style.overflow='hidden';
+
+  document.getElementById('q-client').value = prefillClientName || '';
+  const c = clients.find(x=> (x.name||'') === (prefillClientName||''));
+  document.getElementById('q-phone').value = c?.phone || '';
+  document.getElementById('q-valid').value = 7;
+  document.getElementById('q-iva').value = 'inherit';
+  document.getElementById('q-notes').value = document.getElementById('quote-notes')?.value || '';
+  renderQuoteModalPreview();
+  hydrateClientsDatalist();
+}
+
+function closeQuoteModal(){
+  const back = document.getElementById('quoteBackdrop');
+  if(!back) return;
+  back.style.display = 'none';
+  document.body.style.overflow='auto';
+}
+
+function createQuoteFromSelection(){
+  const client = document.getElementById('q-client').value.trim();
+  if(!client) return;
+
+  const items = getQuoteItems();
+  const ivaSel = document.getElementById('q-iva')?.value || 'inherit';
+  const ivaOn = ivaSel==='inherit'
+    ? !!document.getElementById('quote-iva')?.checked
+    : (ivaSel==='on');
+
+  const { subtotal, iva, total } = computeQuoteTotal(items, ivaOn);
+
+  const q = {
+    id: crypto.randomUUID(),
+    client,
+    phone: document.getElementById('q-phone').value.trim(),
+    items,
+    notes: document.getElementById('q-notes').value.trim(),
+    ivaOn,
+    subtotal,
+    iva,
+    total,
+    status: 'draft',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    validDays: Number(document.getElementById('q-valid').value || 7)
+  };
+  quotes.unshift(q);
+
+  // Si no existe cliente, lo creamos como prospecto rápido
+  if(!clients.some(c=> (c.name||'')===client)){
+    clients.unshift({
+      id: crypto.randomUUID(),
+      name: client,
+      phone: q.phone,
+      email: '',
+      company: '',
+      stage: 'prospecto',
+      tags: '',
+      notes: ''
+    });
+  }
+
+  renderQuotes();
+  renderClients();
+  refreshReports();
+  refreshKPIs();
+  syncUserState();
+  closeQuoteModal();
+  // navegar a cotizaciones
+  location.hash = '#cotizaciones';
+}
+
+function quoteToText(q){
+  const items = (q.items||[]).map(it=> `• ${it.name} — ${fmtMoney(it.price)}`).join('\n');
+  const validUntil = new Date(new Date(q.createdAt).getTime() + (q.validDays||7)*86400000);
+  const lines = [
+    '— COTIZACIÓN —',
+    `Cliente: ${q.client}`,
+    '',
+    'Items:',
+    items || '(sin items)',
+    '',
+    `Subtotal: ${fmtMoney(q.subtotal||0)}`,
+    q.ivaOn ? `IVA (19%): ${fmtMoney(q.iva||0)}` : 'IVA: No incluido',
+    `TOTAL: ${fmtMoney(q.total||0)}`,
+    '',
+    q.notes ? `Notas: ${q.notes}` : '',
+    `Válida hasta: ${validUntil.toLocaleDateString('es-CO',{dateStyle:'medium'})}`,
+  ].filter(Boolean);
+  return lines.join('\n');
+}
+
+function openWhatsApp(phone, text){
+  const cleaned = (phone||'').replace(/[^\d]/g,'');
+  const url = cleaned ? `https://wa.me/${cleaned}?text=${encodeURIComponent(text)}` : `https://wa.me/?text=${encodeURIComponent(text)}`;
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+function moveQuote(qid, dir){
+  const order = QUOTE_STATUS.map(s=>s.k);
+  const q = quotes.find(x=>x.id===qid);
+  if(!q) return;
+  const i = order.indexOf(q.status||'draft');
+  const ni = Math.max(0, Math.min(order.length-1, i + dir));
+  q.status = order[ni];
+  q.updatedAt = new Date().toISOString();
+  renderQuotes();
+  refreshReports();
+  syncUserState();
+}
+
+function renderQuotes(){
+  const search = (document.getElementById('quote-search')?.value || '').trim().toLowerCase();
+  const statusFilter = document.getElementById('quote-status-filter')?.value || 'all';
+
+  const filtered = quotes.filter(q=>{
+    if(statusFilter!=='all' && (q.status||'draft')!==statusFilter) return false;
+    if(!search) return true;
+    const hay = `${q.client||''} ${(q.items||[]).map(i=>i.name).join(' ')} ${q.status||''} ${q.notes||''}`.toLowerCase();
+    return hay.includes(search);
+  });
+
+  // clear columns
+  QUOTE_STATUS.forEach(s=>{
+    const el = document.getElementById(`k-${s.k}`);
+    if(el) el.innerHTML = '';
+    const c = document.getElementById(`kc-${s.k}`);
+    if(c) c.textContent = String(filtered.filter(q=> (q.status||'draft')===s.k).length);
+  });
+
+  filtered.forEach(q=>{
+    const col = document.getElementById(`k-${q.status||'draft'}`);
+    if(!col) return;
+
+    const created = new Date(q.createdAt);
+    const card = document.createElement('div');
+    card.className = 'kcard fadein';
+    card.innerHTML = `
+      <div class="top">
+        <div>
+          <div class="title">${esc(q.client||'—')}</div>
+          <div class="meta">${created.toLocaleDateString('es-CO',{dateStyle:'medium'})} · ${quoteStatusLabel(q.status||'draft')}</div>
+        </div>
+        <div class="price" style="white-space:nowrap">${fmtMoney(q.total||0)}</div>
+      </div>
+      <div class="meta" style="margin-top:8px">${(q.items||[]).slice(0,3).map(i=>esc(i.name)).join(' · ')}${(q.items||[]).length>3?' · …':''}</div>
+      <div class="actions" style="margin-top:10px;flex-wrap:wrap">
+        <button class="iconbtn" data-q-left="${q.id}" title="Etapa anterior">◀</button>
+        <button class="iconbtn" data-q-right="${q.id}" title="Siguiente etapa">▶</button>
+        <button class="iconbtn" data-q-copy="${q.id}">Copiar</button>
+        <button class="iconbtn" data-q-wa="${q.id}">WhatsApp</button>
+        <button class="iconbtn danger" data-q-del="${q.id}">Eliminar</button>
+      </div>`;
+    col.appendChild(card);
+  });
+}
+
+/* ---------- Reportes ---------- */
+function refreshReports(){
+  const now = Date.now();
+  const days30 = 30*86400000;
+  const quotes30 = quotes.filter(q=> (new Date(q.createdAt).getTime()) >= (now - days30)).length;
+  const closeBase = quotes.filter(q=> ['sent','negotiation','approved','paid','rejected'].includes(q.status||'draft')).length;
+  const closeWins = quotes.filter(q=> ['approved','paid'].includes(q.status||'draft')).length;
+  const closeRate = closeBase ? Math.round((closeWins/closeBase)*100) : 0;
+
+  const overdue = tasks.filter(t=> !t.done && t.due && new Date(t.due+'T12:00:00').getTime() < now).length;
+
+  const el30 = document.getElementById('rep-quotes-30');
+  const elCr = document.getElementById('rep-close-rate');
+  const elOd = document.getElementById('rep-overdue');
+  if(el30) el30.textContent = String(quotes30);
+  if(elCr) elCr.textContent = `${closeRate}%`;
+  if(elOd) elOd.textContent = String(overdue);
+
+  // top servicios (por nombre)
+  const counts = new Map();
+  quotes.forEach(q=>{
+    (q.items||[]).forEach(it=>{
+      counts.set(it.name, (counts.get(it.name)||0)+1);
+    });
+  });
+  const top = Array.from(counts.entries()).sort((a,b)=> b[1]-a[1]).slice(0,8);
+
+  const topWrap = document.getElementById('rep-top-services');
+  if(topWrap){
+    topWrap.innerHTML = top.length
+      ? top.map(([name,n])=>`
+          <div class="item">
+            <div><strong>${esc(name)}</strong><div class="mini">Aparece en ${n} cotización(es)</div></div>
+            <div class="actions"><span class="pill">${n}</span></div>
+          </div>`).join('')
+      : `<div class="subcard"><div class="mini">Aún no hay cotizaciones para calcular top.</div></div>`;
+  }
+
+  const nextWrap = document.getElementById('rep-next-appts');
+  if(nextWrap){
+    const weekTo = now + 7*86400000;
+    const next = appts
+      .map(a=> ({...a, t: new Date(a.datetime).getTime()}))
+      .filter(a=> a.t>=now && a.t<=weekTo)
+      .sort((a,b)=>a.t-b.t)
+      .slice(0,10);
+
+    nextWrap.innerHTML = next.length
+      ? next.map(a=>`
+        <div class="item">
+          <div>
+            <strong>${esc(a.topic||'Reunión')}</strong>
+            <div class="meta">${new Date(a.datetime).toLocaleString('es-CO',{dateStyle:'medium',timeStyle:'short'})} · ${esc(a.with||'—')}</div>
+          </div>
+          <div class="actions"><span class="pill">${esc(a.status||'Pendiente')}</span></div>
+        </div>`).join('')
+      : `<div class="subcard"><div class="mini">No hay reuniones en los próximos 7 días.</div></div>`;
+  }
+}
+
+function exportICS(){
+  const now = Date.now();
+  const weekTo = now + 14*86400000;
+  const list = appts
+    .map(a=> ({...a, t: new Date(a.datetime).getTime()}))
+    .filter(a=> a.t>=now && a.t<=weekTo)
+    .sort((a,b)=> a.t-b.t);
+
+  const dt = d=>{
+    const z = new Date(d);
+    // formato UTC: YYYYMMDDTHHMMSSZ
+    const pad=n=>String(n).padStart(2,'0');
+    return `${z.getUTCFullYear()}${pad(z.getUTCMonth()+1)}${pad(z.getUTCDate())}T${pad(z.getUTCHours())}${pad(z.getUTCMinutes())}${pad(z.getUTCSeconds())}Z`;
+  };
+
+  const lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Agencia Digital//Agenda//ES',
+    ...list.flatMap(a=>{
+      const start = new Date(a.datetime);
+      const end = new Date(start.getTime() + (Number(a.duration||60)*60000));
+      return [
+        'BEGIN:VEVENT',
+        `UID:${a.id}@agencia-digital`,
+        `DTSTAMP:${dt(new Date())}`,
+        `DTSTART:${dt(start)}`,
+        `DTEND:${dt(end)}`,
+        `SUMMARY:${(a.topic||'Reunión').replace(/\n/g,' ')}`,
+        `DESCRIPTION:${(`Con: ${a.with||'—'}\\nNotas: ${a.notes||''}`).replace(/\n/g,'\\n')}`,
+        'END:VEVENT'
+      ];
+    }),
+    'END:VCALENDAR'
+  ];
+
+  const blob = new Blob([lines.join('\r\n')], {type:'text/calendar;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'agenda.ics';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1500);
+}
+
+/* ---------- Preferencias UI ---------- */
+function hydratePrefsUI(){
+  const en = document.getElementById('notif-enabled');
+  const lead = document.getElementById('notif-lead');
+  const dig = document.getElementById('notif-digest');
+  if(en) en.checked = !!prefs.notificationsEnabled;
+  if(lead) lead.value = String(prefs.leadMinutes ?? 15);
+  if(dig) dig.value = prefs.digestTime ?? '20:00';
+}
+
+
+/* ---------- Helpers: clientes & export ---------- */
+let editingClientId = null;
+
+function openClientModal(client=null){
+  const back = document.getElementById('clientBackdrop');
+  if(!back) return;
+  back.style.display = 'flex';
+  document.body.style.overflow='hidden';
+
+  editingClientId = client?.id || null;
+  document.getElementById('clientModalTitle').textContent = editingClientId ? 'Editar cliente' : 'Nuevo cliente';
+
+  document.getElementById('c-name').value    = client?.name || '';
+  document.getElementById('c-company').value = client?.company || '';
+  document.getElementById('c-phone').value   = client?.phone || '';
+  document.getElementById('c-email').value   = client?.email || '';
+  document.getElementById('c-stage').value   = client?.stage || 'prospecto';
+  document.getElementById('c-tags').value    = client?.tags || '';
+  document.getElementById('c-notes').value   = client?.notes || '';
+  document.getElementById('c-name')?.focus({preventScroll:true});
+}
+
+function closeClientModal(){
+  const back = document.getElementById('clientBackdrop');
+  if(!back) return;
+  back.style.display = 'none';
+  document.body.style.overflow='auto';
+  editingClientId = null;
+}
+
+function saveClientFromModal(){
+  const name = document.getElementById('c-name').value.trim();
+  if(!name) return;
+
+  const obj = {
+    id: editingClientId || crypto.randomUUID(),
+    name,
+    company: document.getElementById('c-company').value.trim(),
+    phone: document.getElementById('c-phone').value.trim(),
+    email: document.getElementById('c-email').value.trim(),
+    stage: document.getElementById('c-stage').value,
+    tags: document.getElementById('c-tags').value.trim(),
+    notes: document.getElementById('c-notes').value.trim(),
+    updatedAt: new Date().toISOString(),
+    createdAt: editingClientId ? (clients.find(c=>c.id===editingClientId)?.createdAt || new Date().toISOString()) : new Date().toISOString()
+  };
+
+  if(editingClientId){
+    clients = clients.map(c=> c.id===editingClientId ? obj : c);
+  }else{
+    clients.unshift(obj);
+  }
+  renderClients();
+  hydrateClientsDatalist();
+  syncUserState();
+  closeClientModal();
+}
+
+function exportQuotesCSV(){
+  const cols = ['id','cliente','telefono','estado','creada','total','items','notas'];
+  const rows = quotes.map(q=>[
+    q.id,
+    q.client,
+    q.phone||'',
+    quoteStatusLabel(q.status||'draft'),
+    new Date(q.createdAt).toLocaleString('es-CO'),
+    q.total||0,
+    (q.items||[]).map(i=>i.name).join(' | '),
+    (q.notes||'').replace(/\n/g,' ')
+  ]);
+
+  const csv = [
+    cols.join(','),
+    ...rows.map(r=> r.map(v=> `"${String(v).replace(/"/g,'""')}"`).join(','))
+  ].join('\n');
+
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'cotizaciones.csv';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1500);
+}
+
 /* ---------- Agenda / Calendario ---------- */
-let calRef = new Date();
 function monthLabel(d){ return d.toLocaleDateString('es-CO',{month:'long',year:'numeric'}) }
 
 function buildCalendar(){
@@ -923,95 +2258,96 @@ function buildCalendar(){
   grid.innerHTML='';
   const y=calRef.getFullYear(), m=calRef.getMonth();
   const first = new Date(y,m,1);
-  const startIdx = (first.getDay()+6)%7;
+  const startIdx = (first.getDay()+6)%7; // lunes=0
   const daysInMonth = new Date(y,m+1,0).getDate();
+
   for(let i=0;i<startIdx;i++){
     const c=document.createElement('div'); grid.appendChild(c);
   }
   for(let d=1; d<=daysInMonth; d++){
     const cell=document.createElement('div'); cell.className='cal-cell';
-    const dateISO = new Date(y,m,d).toISOString().slice(0,10);
+    const dateISO = `${y}-${pad2(m+1)}-${pad2(d)}`;
     cell.dataset.date = dateISO;
-    const dots = appts.some(a=>a.datetime.startsWith(dateISO)) ? '<span class="dot"></span>' : '';
+    const hasAppt = appts.some(a=>String(a.datetime||'').startsWith(dateISO));
+    const dots = hasAppt ? '<span class="dot"></span>' : '';
     cell.innerHTML = `<span class="d">${d}</span><div style="margin-top:22px">${dots}</div>`;
     cell.addEventListener('click',()=> filterApptByDate(dateISO));
     grid.appendChild(cell);
   }
 }
 
-function renderApptList(list){
-  const wrap = $('#apptList'); if(!wrap) return;
+function apptStatus(a){
+  if(a.completed) return {label:'Realizada', chip:'ok'};
+  const now = new Date();
+  const start = new Date(a.datetime);
+  const diffMin = (start - now)/60000;
+  if(diffMin < 0) return {label:'En curso / pasada', chip:'danger'};
+  if(diffMin <= 30) return {label:'Próxima', chip:'warn'};
+  return {label:'Pendiente', chip:''};
+}
+function apptPretty(a){
+  const when = new Date(a.datetime).toLocaleString('es-CO',{dateStyle:'medium',timeStyle:'short'});
+  const who = a.with ? ` · ${escapeHtml(a.with)}` : '';
+  const topic = a.topic ? ` · ${escapeHtml(a.topic)}` : '';
+  return `${when}${who}${topic}`;
+}
+
+function renderApptTimeline(targetId, list){
+  const wrap = document.getElementById(targetId);
+  if(!wrap) return;
   wrap.innerHTML='';
   const data = list || appts;
   const sorted = [...data].sort((a,b)=> new Date(a.datetime)-new Date(b.datetime));
+
+  if(!sorted.length){
+    wrap.innerHTML = `<div class="mini">Aún no hay reuniones. Pulsa “+ Nueva reunión”.</div>`;
+    return;
+  }
+
   sorted.forEach((a)=>{
+    const st = apptStatus(a);
     const el = document.createElement('div'); el.className='item fadein';
-    const when = new Date(a.datetime).toLocaleString('es-CO',{dateStyle:'medium',timeStyle:'short'});
     el.innerHTML = `
-      <div><strong>${a.title}</strong><div class="meta">${when}${a.notes? ' · '+a.notes:''}</div></div>
-      <div class="actions"><button class="iconbtn" data-edit="${a.id}">Editar</button><button class="iconbtn danger" data-del="${a.id}">Eliminar</button></div>`;
+      <div style="min-width:0">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <strong style="max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(a.title)}</strong>
+          <span class="chip ${st.chip}">${st.label}</span>
+          ${a.confirmed ? `<span class="chip ok">Confirmada</span>` : ``}
+        </div>
+        <div class="meta">${apptPretty(a)}${a.location ? ' · '+escapeHtml(a.location):''}</div>
+        <div class="checkline" style="margin-top:8px">
+          <label title="Confirma que la reunión está lista"><input type="checkbox" data-confirm="${a.id}" ${a.confirmed?'checked':''}/> Confirmada</label>
+          <label title="Marca cuando ya se realizó"><input type="checkbox" data-complete="${a.id}" ${a.completed?'checked':''}/> Realizada</label>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="iconbtn" data-edit="${a.id}" type="button">Editar</button>
+        <button class="iconbtn danger" data-del="${a.id}" type="button">Eliminar</button>
+      </div>`;
     wrap.appendChild(el);
   });
+}
+
+function renderApptList(list){
+  renderApptTimeline('apptTimeline', list);
+  renderApptTimeline('apptTimelineAgenda', list);
   refreshKPIs();
   buildCalendar();
 }
 
 function filterApptByDate(dateISO){
-  const filtered = appts.filter(a=>a.datetime.startsWith(dateISO));
+  const filtered = appts.filter(a=>String(a.datetime||'').startsWith(dateISO));
   renderApptList(filtered.length?filtered:appts);
 }
-
-document.addEventListener('submit', e=>{
-  if(e.target.id === 'apptForm'){
-    e.preventDefault();
-    const obj = {
-      id: crypto.randomUUID(),
-      title: $('#appt-title').value.trim(),
-      datetime: $('#appt-datetime').value,
-      notes: $('#appt-notes').value.trim()
-    };
-    appts.push(obj);
-    e.target.reset();
-    renderApptList();
-    syncUserState();
-  }
-});
-
-$('#apptList')?.addEventListener('click', e=>{
-  const id = e.target.dataset.del ?? e.target.dataset.edit;
-  if(!id) return;
-  if(e.target.dataset.del){
-    appts = appts.filter(a=>a.id!==id);
-    renderApptList();
-    syncUserState();
-  } else {
-    const a = appts.find(x=>x.id===id);
-    $('#appt-title').value=a.title;
-    $('#appt-datetime').value=a.datetime;
-    $('#appt-notes').value=a.notes||'';
-    appts = appts.filter(x=>x.id!==id);
-    renderApptList();
-    syncUserState();
-  }
-});
-
-$('#prevMonth')?.addEventListener('click', ()=>{
-  calRef.setMonth(calRef.getMonth()-1);
-  buildCalendar();
-});
-$('#nextMonth')?.addEventListener('click', ()=>{
-  calRef.setMonth(calRef.getMonth()+1);
-  buildCalendar();
-});
 
 /* ---------- Tareas ---------- */
 function priorityRank(p){ return {Alta:0,Media:1,Baja:2}[p] ?? 1 }
 function isOverdue(t){
   if(!t.due || t.done) return false;
-  const d=new Date(t.due);
-  const now=new Date();
-  d.setHours(23,59,59,999);
-  return d<now;
+  // Parse fecha límite en horario local (evita desfase por zona horaria)
+  const d = new Date(t.due + 'T23:59:59');
+  const now = new Date();
+  return d < now;
 }
 
 function renderTasks(){
@@ -1029,10 +2365,10 @@ function renderTasks(){
     if(filter==='today') return t.due && t.due===todayStr();
     if(filter==='week'){
       if(!t.due) return false;
-      const d=new Date(t.due), now=new Date();
-      const end=new Date();
+      const now = new Date();
+      const d = new Date(t.due + 'T12:00:00');
+      const end = new Date(now);
       end.setDate(now.getDate()+7);
-      d.setHours(12,0,0,0);
       return d>=now && d<=end;
     }
     return true;
@@ -1041,8 +2377,8 @@ function renderTasks(){
   list.sort((a,b)=>{
     if(sort==='priority') return priorityRank(a.priority)-priorityRank(b.priority);
     if(sort==='alpha') return a.title.localeCompare(b.title);
-    const ad = a.due?new Date(a.due).getTime():Infinity;
-    const bd = b.due?new Date(b.due).getTime():Infinity;
+    const ad = a.due?new Date(a.due+'T12:00:00').getTime():Infinity;
+    const bd = b.due?new Date(b.due+'T12:00:00').getTime():Infinity;
     return ad-bd;
   });
 
@@ -1134,19 +2470,132 @@ $('#clearDone')?.addEventListener('click', ()=>{
 document.addEventListener('DOMContentLoaded', ()=>{
   const yearEl = document.getElementById('year');
   if(yearEl) yearEl.textContent = new Date().getFullYear();
+
+  // Render inicial
   renderServices();
+  renderClients();
+  renderQuotes();
   renderApptList();
   renderTasks();
   refreshKPIs();
   buildCalendar();
+  refreshReports();
+  hydratePrefsUI();
+  hydrateClientsDatalist();
 
-  // Toggle menú responsive + animación hamburguesa
+  initSectionViews();
+  initAgendaNotifications();
+  startReminderLoop();
+
+  // Sidebar toggle (mobile)
   const navToggle = document.getElementById('navToggle');
   const navMenu   = document.getElementById('navMenu');
   navToggle?.addEventListener('click', ()=>{
     navMenu.classList.toggle('open');
     navToggle.classList.toggle('open');
   });
+
+  // Abrir modales
+  document.getElementById('openQuoteModal')?.addEventListener('click', ()=> openQuoteModal(''));
+  document.getElementById('quote-to-pipeline')?.addEventListener('click', ()=> openQuoteModal(''));
+  document.getElementById('openClientModal')?.addEventListener('click', ()=> openClientModal());
+  // En Agenda existe openApptModal; ya está conectado en el script de agenda
+
+  // Cotizaciones: filtros
+  document.getElementById('quote-search')?.addEventListener('input', renderQuotes);
+  document.getElementById('quote-status-filter')?.addEventListener('change', renderQuotes);
+
+  // Clientes: filtros
+  document.getElementById('client-search')?.addEventListener('input', renderClients);
+  document.getElementById('client-stage')?.addEventListener('change', renderClients);
+
+  // Reportes
+  document.getElementById('rep-refresh')?.addEventListener('click', refreshReports);
+  document.getElementById('rep-export-ics')?.addEventListener('click', exportICS);
+
+  // Export CSV cotizaciones
+  document.getElementById('exportQuotesCsv')?.addEventListener('click', exportQuotesCSV);
+
+  // Modal cotización
+  document.getElementById('quoteClose')?.addEventListener('click', closeQuoteModal);
+  document.getElementById('quoteCancel')?.addEventListener('click', closeQuoteModal);
+  document.getElementById('quoteBackdrop')?.addEventListener('click', (e)=>{ if(e.target?.id==='quoteBackdrop') closeQuoteModal(); });
+  document.getElementById('q-iva')?.addEventListener('change', renderQuoteModalPreview);
+
+  document.getElementById('quoteForm')?.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    createQuoteFromSelection();
+  });
+
+  // Modal cliente
+  document.getElementById('clientClose')?.addEventListener('click', closeClientModal);
+  document.getElementById('clientCancel')?.addEventListener('click', closeClientModal);
+  document.getElementById('clientBackdrop')?.addEventListener('click', (e)=>{ if(e.target?.id==='clientBackdrop') closeClientModal(); });
+
+  document.getElementById('clientForm')?.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    saveClientFromModal();
+  });
+
+  // Delegación: Kanban y lista clientes
+  document.getElementById('cotizaciones')?.addEventListener('click', (e)=>{
+    const idL = e.target?.dataset?.qLeft;
+    const idR = e.target?.dataset?.qRight;
+    const idC = e.target?.dataset?.qCopy;
+    const idW = e.target?.dataset?.qWa;
+    const idD = e.target?.dataset?.qDel;
+
+    if(idL){ moveQuote(idL, -1); }
+    if(idR){ moveQuote(idR, +1); }
+    if(idC){
+      const q = quotes.find(x=>x.id===idC);
+      if(!q) return;
+      navigator.clipboard?.writeText(quoteToText(q));
+    }
+    if(idW){
+      const q = quotes.find(x=>x.id===idW);
+      if(!q) return;
+      openWhatsApp(q.phone, quoteToText(q));
+    }
+    if(idD){
+      quotes = quotes.filter(x=>x.id!==idD);
+      renderQuotes(); refreshReports(); syncUserState();
+    }
+  });
+
+  document.getElementById('clientsList')?.addEventListener('click', (e)=>{
+    const idQ = e.target?.dataset?.clientQuote;
+    const idA = e.target?.dataset?.clientAppt;
+    const idT = e.target?.dataset?.clientTask;
+    const idE = e.target?.dataset?.clientEdit;
+    const idD = e.target?.dataset?.clientDel;
+
+    if(idQ){
+      const c = clients.find(x=>x.id===idQ);
+      openQuoteModal(c?.name||'');
+    }
+    if(idA){
+      const c = clients.find(x=>x.id===idA);
+      // abre modal de reunión y precarga "con quién"
+      openApptModal({ with: c?.name||'' });
+    }
+    if(idT){
+      const c = clients.find(x=>x.id===idT);
+      // precargar form de tareas
+      document.getElementById('task-project').value = c?.name || '';
+      location.hash = '#tareas';
+      document.getElementById('task-title')?.focus();
+    }
+    if(idE){
+      const c = clients.find(x=>x.id===idE);
+      openClientModal(c);
+    }
+    if(idD){
+      clients = clients.filter(x=>x.id!==idD);
+      renderClients(); hydrateClientsDatalist(); syncUserState();
+    }
+  });
+
 });
 </script>
 
@@ -1522,6 +2971,85 @@ document.addEventListener('DOMContentLoaded', ()=>{
   console.log("Firebase inicializado y listo (multiusuario con registro).");
 </script>
 <!-- ========= FIN FIREBASE ========= -->
+
+
+<!-- ====== MODAL RECORDATORIO ====== -->
+
+<div id="apptBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="apptModalTitle">
+  <div class="modal">
+    <div class="head">
+      <div>
+        <div id="apptModalTitle" class="title">Nueva reunión</div>
+        <div class="mini" id="apptModalHint" style="margin-top:4px">Completa los datos para agendar. Luego podrás confirmar o marcar como realizada.</div>
+      </div>
+      <button class="iconbtn" id="apptClose" type="button" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="body">
+      <form id="apptForm" class="fadein" style="margin-top:10px">
+            <div class="row">
+              <div>
+                <label>Título</label>
+                <input class="input" id="appt-title" placeholder="Reunión de brief" required />
+              </div>
+              <div>
+                <label>Fecha y hora</label>
+                <input class="input" id="appt-datetime" type="datetime-local" required />
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label>Con quién</label>
+                <input class="input" id="appt-with" placeholder="Cliente / empresa / persona" />
+              </div>
+              <div>
+                <label>Tema</label>
+                <input class="input" id="appt-topic" placeholder="Sitio web, propuesta, capacitación..." />
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label>Duración (min)</label>
+                <input class="input" id="appt-duration" type="number" min="5" step="5" value="30" />
+              </div>
+              <div>
+                <label>Lugar / enlace</label>
+                <input class="input" id="appt-location" placeholder="Zoom / Meet / Oficina..." />
+              </div>
+            </div>
+
+            <label>Notas</label>
+            <textarea id="appt-notes" class="input" rows="3" placeholder="Agenda y puntos a tratar..."></textarea>
+
+            <div class="actions" style="margin-top:10px">
+              <button type="submit" class="btn">Guardar reunión</button>
+              <button type="reset" class="iconbtn">Limpiar</button>
+            </div>
+          </form>
+      <div class="mini" style="margin-top:10px">Tip: para maximizar notificaciones en móvil, conviene instalar la app como PWA.</div>
+    </div>
+  </div>
+</div>
+
+<div id="reminderBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="reminderTitle">
+  <div class="modal">
+    <div class="head">
+      <div>
+        <h3 id="reminderTitle">Reunión próxima</h3>
+        <div class="mini" id="reminderWhen"></div>
+      </div>
+      <button class="iconbtn" id="reminderClose" type="button" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="body">
+      <div id="reminderBody"></div>
+    </div>
+    <div class="foot">
+      <button class="iconbtn" id="reminderSnooze" type="button">Posponer 5 min</button>
+      <button class="btn" id="reminderOk" type="button">Entendido</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
