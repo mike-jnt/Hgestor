@@ -665,6 +665,31 @@ input,select,textarea{font-size:16px} /* prevents iOS zoom */
   .pill{padding:8px 10px}
 }
 
+
+  .app-toast{
+    position:fixed;
+    left:50%;
+    bottom:18px;
+    transform:translateX(-50%) translateY(14px);
+    background:rgba(15,23,42,.92);
+    border:1px solid rgba(255,255,255,.10);
+    color:var(--text);
+    padding:10px 14px;
+    border-radius:14px;
+    box-shadow: var(--shadow);
+    z-index:9999;
+    opacity:0;
+    pointer-events:none;
+    transition: opacity .18s ease, transform .18s ease;
+    max-width:min(92vw,520px);
+    text-align:center;
+    font-size:14px;
+  }
+  .app-toast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+  }
+
 </style>
 </head>
 
@@ -745,6 +770,11 @@ input,select,textarea{font-size:16px} /* prevents iOS zoom */
           <button class="btn" id="qaAppt" type="button">+ Reunión</button>
           <button class="btn" id="qaTask" type="button">+ Tarea</button>
           <button class="btn ghost" id="qaClient" type="button">+ Cliente</button>
+
+        <div class="btnrow demo-row" style="margin-top:10px;justify-content:flex-end;flex-wrap:wrap">
+          <button class="btn sm ghost" id="demoLoadBtn" type="button">Cargar demo</button>
+          <button class="btn sm ghost" id="demoClearBtn" type="button">Limpiar demo</button>
+        </div>
         </div>
       </div>
     </div>
@@ -1515,6 +1545,8 @@ function escapeHtml(str=''){
   return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
 }
 
+const esc = escapeHtml;
+
 // Fechas en local (evita desfaces por UTC en Colombia)
 const pad2 = n => String(n).padStart(2,'0');
 const localISODate = (d=new Date()) => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
@@ -1559,6 +1591,14 @@ function hydrateState(state){
   prefs    = typeof (state && state.prefs) === 'object' && state.prefs ? { ...prefs, ...state.prefs } : prefs;
   quoteSel = new Set(Array.isArray((state && state.quoteSel)) ? state.quoteSel : []);
 
+// Si el usuario está vacío, cargamos datos de demo para previsualizar el software
+const _isEmpty = (!services.length && !appts.length && !tasks.length && !clients.length && !quotes.length);
+if(_isEmpty){
+  seedDemoData();
+  // Persistimos para que el demo se vea también en otras secciones
+  syncUserState();
+}
+
   // Migraciones suaves (por si había datos antiguos)
   tasks = tasks.map(t=> ({ status: t.status || (t.done ? 'done':'todo'), labels: t.labels || '', ...t }));
 
@@ -1576,6 +1616,181 @@ function hydrateState(state){
   refreshHomeDashboard();
 }
 window.hydrateState = hydrateState;
+
+/* ---------- Datos de demo (para visualizar el sistema) ---------- */
+function seedDemoData(){
+  const now = new Date();
+
+  const pad=n=>String(n).padStart(2,'0');
+  const dtLocal = (d, hh=10, mm=0)=>{
+    const x = new Date(now);
+    x.setDate(x.getDate()+d);
+    x.setHours(hh, mm, 0, 0);
+    return `${x.getFullYear()}-${pad(x.getMonth()+1)}-${pad(x.getDate())}T${pad(x.getHours())}:${pad(x.getMinutes())}`;
+  };
+
+  /* --- Servicios (cat: web | marketing | software | capacitacion | soporte) --- */
+  services = [
+    { id:'svc-001', name:'Landing Page Profesional', cat:'web', price:900000, desc:'Diseño responsive + copy básico + formulario + integración WhatsApp.' },
+    { id:'svc-002', name:'Sitio Web Corporativo', cat:'web', price:1800000, desc:'5 secciones + SEO básico + velocidad optimizada + dominio/config.' },
+    { id:'svc-003', name:'Tienda Online', cat:'web', price:3200000, desc:'Catálogo, carrito, pagos, envíos, panel admin y capacitación.' },
+    { id:'svc-004', name:'Branding / Identidad Visual', cat:'marketing', price:1200000, desc:'Logo + paleta + tipografías + manual corto + piezas iniciales.' },
+    { id:'svc-005', name:'Gestión de Pauta (Meta/Google)', cat:'marketing', price:950000, desc:'Setup + optimización semanal + reportes + recomendaciones.' },
+    { id:'svc-006', name:'Automatización (Formularios + CRM)', cat:'software', price:2400000, desc:'Captura de leads, pipeline, automatizaciones y entrenamiento.' },
+    { id:'svc-007', name:'Capacitación Equipo (2h)', cat:'capacitacion', price:650000, desc:'Sesión práctica: Drive/Sheets/Canva/IA — con guía y ejercicios.' },
+    { id:'svc-008', name:'Soporte y Mantenimiento Mensual', cat:'soporte', price:420000, desc:'Actualizaciones, backups, monitoreo, 2h soporte mensual.' }
+  ];
+
+  /* --- Clientes (stage: prospecto | activo | inactivo) --- */
+  clients = [
+    { id:'cli-001', name:'Cliente Demo 1', company:'Comercio Central', phone:'+57 300 000 1001', email:'demo1@empresa.com', stage:'prospecto', tags:'web,landing', notes:'Quiere empezar con landing y luego sitio corporativo.' },
+    { id:'cli-002', name:'Cliente Demo 2', company:'Tienda Aurora', phone:'+57 300 000 1002', email:'demo2@empresa.com', stage:'activo', tags:'ecommerce,pagos', notes:'Necesita tienda online y catálogo. Tiene logo y fotos.' },
+    { id:'cli-003', name:'Cliente Demo 3', company:'Servicios Nova', phone:'+57 300 000 1003', email:'demo3@empresa.com', stage:'activo', tags:'crm,automatizacion', notes:'Quiere CRM + automatización de leads desde formulario.' },
+    { id:'cli-004', name:'Cliente Demo 4', company:'Academia Pro', phone:'+57 300 000 1004', email:'demo4@empresa.com', stage:'prospecto', tags:'capacitacion,team', notes:'Busca capacitación para equipo (Drive/Sheets/IA).' },
+    { id:'cli-005', name:'Cliente Demo 5', company:'Inmobiliaria Azul', phone:'+57 300 000 1005', email:'demo5@empresa.com', stage:'inactivo', tags:'web,seo', notes:'Pausó por presupuesto. Retomar en 1-2 meses.' },
+    { id:'cli-006', name:'Cliente Demo 6', company:'Restaurante Luna', phone:'+57 300 000 1006', email:'demo6@empresa.com', stage:'activo', tags:'branding,ads', notes:'Quiere identidad + pauta para reservas.' }
+  ];
+
+  /* --- Agenda / Reuniones (status: Pendiente | Realizada) --- */
+  appts = [
+    { id:'apt-001', datetime: dtLocal(0, 9, 30), with:'Cliente Demo 1 (Comercio Central)', topic:'Brief: Landing + objetivos', duration:40, location:'Google Meet', notes:'Definir objetivo, público, oferta y CTA.', status:'Pendiente', confirmed:false, done:false },
+    { id:'apt-002', datetime: dtLocal(0, 15, 0), with:'Cliente Demo 6 (Restaurante Luna)', topic:'Revisión de identidad + pauta', duration:45, location:'Zoom', notes:'Validar piezas y presupuesto mensual.', status:'Pendiente', confirmed:true, done:false },
+    { id:'apt-003', datetime: dtLocal(1, 10, 0), with:'Cliente Demo 2 (Tienda Aurora)', topic:'Demo: tienda online + pagos', duration:60, location:'Google Meet', notes:'Revisar pasarela (Wompi/MercadoPago) y envíos.', status:'Pendiente', confirmed:true, done:false },
+    { id:'apt-004', datetime: dtLocal(2, 16, 0), with:'Cliente Demo 3 (Servicios Nova)', topic:'Kickoff: automatización CRM', duration:50, location:'Presencial', notes:'Definir etapas del pipeline y fuentes de leads.', status:'Pendiente', confirmed:true, done:false },
+    { id:'apt-005', datetime: dtLocal(4, 11, 30), with:'Cliente Demo 4 (Academia Pro)', topic:'Plan de capacitación (equipo)', duration:35, location:'Llamada', notes:'Confirmar asistentes, nivel y herramientas.', status:'Pendiente', confirmed:false, done:false }
+  ];
+
+  /* --- Tareas (status: todo | doing | review | done) --- */
+  tasks = [
+    { id:'tsk-001', title:'Enviar propuesta: Landing (Cliente Demo 1)', desc:'Preparar propuesta con 2 opciones y cronograma.', project:'Comercio Central', due: localISODate(new Date(now.getTime()+1*86400000)), priority:'Alta', labels:'ventas,cotizacion', status:'todo', done:false },
+    { id:'tsk-002', title:'Solicitar assets (Cliente Demo 2)', desc:'Logo, paleta, fotos, productos y acceso a dominio.', project:'Tienda Aurora', due: localISODate(new Date(now.getTime()+2*86400000)), priority:'Media', labels:'entrega,web', status:'doing', done:false },
+    { id:'tsk-003', title:'Definir pipeline CRM (Cliente Demo 3)', desc:'Proponer etapas, responsables, automatizaciones y permisos.', project:'Servicios Nova', due: localISODate(new Date(now.getTime()+3*86400000)), priority:'Alta', labels:'crm,operacion', status:'todo', done:false },
+    { id:'tsk-004', title:'Seguimiento cliente inactivo (Cliente Demo 5)', desc:'Mensaje de seguimiento y consulta para retomar.', project:'Inmobiliaria Azul', due: localISODate(new Date(now.getTime()-1*86400000)), priority:'Alta', labels:'seguimiento', status:'todo', done:false },
+    { id:'tsk-005', title:'Crear plantilla de cotización', desc:'Plantilla estándar para web/ads/capacitación.', project:'Interno', due: localISODate(new Date(now.getTime()+5*86400000)), priority:'Media', labels:'operacion', status:'review', done:false },
+    { id:'tsk-006', title:'Actualizar portafolio', desc:'Agregar casos de éxito y capturas.', project:'Interno', due: localISODate(new Date(now.getTime()+7*86400000)), priority:'Baja', labels:'marketing', status:'todo', done:false },
+    { id:'tsk-007', title:'Configurar estructura de proyecto (Cliente Demo 2)', desc:'Carpetas Drive + checklist de entregables.', project:'Tienda Aurora', due: localISODate(new Date(now.getTime()+1*86400000)), priority:'Media', labels:'organizacion', status:'doing', done:false },
+    { id:'tsk-008', title:'Preparar agenda semanal', desc:'Revisar reuniones y bloquear tiempos de entrega.', project:'Interno', due: localISODate(new Date(now.getTime()+0*86400000)), priority:'Media', labels:'planeacion', status:'todo', done:false },
+    { id:'tsk-009', title:'Revisión de copy para landing', desc:'Redactar 3 propuestas de titular + beneficios.', project:'Comercio Central', due: localISODate(new Date(now.getTime()+2*86400000)), priority:'Media', labels:'copy,web', status:'todo', done:false },
+    { id:'tsk-010', title:'Cerrar cotización pendiente', desc:'Confirmar ajustes y reenviar al cliente.', project:'Restaurante Luna', due: localISODate(new Date(now.getTime()+1*86400000)), priority:'Alta', labels:'ventas', status:'todo', done:false }
+  ];
+
+  /* --- Cotizaciones (stage/status: draft|sent|negotiation|approved|paid|rejected) --- */
+  quotes = [
+    { id:'q-2001', createdAt:new Date(now.getTime()-2*86400000).toISOString(), clientId:'cli-001', clientName:'Cliente Demo 1', clientPhone:'+57 300 000 1001', title:'Landing Page Profesional', stage:'draft', status:'draft', validUntil: localISODate(new Date(now.getTime()+7*86400000)), includeVAT:true,
+      items:[ {id:'svc-001', name:'Landing Page Profesional', price:900000, qty:1} ],
+      notes:'Incluye formulario + WhatsApp + 1 ronda de cambios.'
+    },
+    { id:'q-2002', createdAt:new Date(now.getTime()-6*86400000).toISOString(), clientId:'cli-002', clientName:'Cliente Demo 2', clientPhone:'+57 300 000 1002', title:'Tienda Online + Pagos', stage:'negotiation', status:'negotiation', validUntil: localISODate(new Date(now.getTime()+3*86400000)), includeVAT:false,
+      items:[ {id:'svc-003', name:'Tienda Online', price:3200000, qty:1}, {id:'svc-008', name:'Soporte y Mantenimiento Mensual', price:420000, qty:1} ],
+      notes:'Pendiente definir pasarela y costos de envío.'
+    },
+    { id:'q-2003', createdAt:new Date(now.getTime()-12*86400000).toISOString(), clientId:'cli-003', clientName:'Cliente Demo 3', clientPhone:'+57 300 000 1003', title:'Automatización + CRM', stage:'sent', status:'sent', validUntil: localISODate(new Date(now.getTime()+10*86400000)), includeVAT:true,
+      items:[ {id:'svc-006', name:'Automatización (Formularios + CRM)', price:2400000, qty:1} ],
+      notes:'Incluye capacitación de uso y automatización de correos.'
+    },
+    { id:'q-2004', createdAt:new Date(now.getTime()-18*86400000).toISOString(), clientId:'cli-006', clientName:'Cliente Demo 6', clientPhone:'+57 300 000 1006', title:'Branding + Pauta', stage:'approved', status:'approved', validUntil: localISODate(new Date(now.getTime()+14*86400000)), includeVAT:true,
+      items:[ {id:'svc-004', name:'Branding / Identidad Visual', price:1200000, qty:1}, {id:'svc-005', name:'Gestión de Pauta (Meta/Google)', price:950000, qty:1} ],
+      notes:'Aprobada. Falta definir fecha de inicio.'
+    },
+    { id:'q-2005', createdAt:new Date(now.getTime()-30*86400000).toISOString(), clientId:'cli-002', clientName:'Cliente Demo 2', clientPhone:'+57 300 000 1002', title:'Sitio corporativo (alternativa)', stage:'rejected', status:'rejected', validUntil: localISODate(new Date(now.getTime()-5*86400000)), includeVAT:false,
+      items:[ {id:'svc-002', name:'Sitio Web Corporativo', price:1800000, qty:1} ],
+      notes:'El cliente prefirió tienda online directamente.'
+    },
+    { id:'q-2006', createdAt:new Date(now.getTime()-40*86400000).toISOString(), clientId:'cli-006', clientName:'Cliente Demo 6', clientPhone:'+57 300 000 1006', title:'Capacitación equipo (mes anterior)', stage:'paid', status:'paid', validUntil: localISODate(new Date(now.getTime()-20*86400000)), includeVAT:true,
+      items:[ {id:'svc-007', name:'Capacitación Equipo (2h)', price:650000, qty:2} ],
+      notes:'Pagada. Se entregó material y grabación.'
+    }
+  ];
+
+  // Preselección en cotizador
+  quoteSel = new Set(['svc-001','svc-005']);
+
+  // Preferencias demo
+  prefs = { ...prefs, digestTime:'20:00', leadMinutes:15, notificationsEnabled:false };
+
+  // Notas rápidas demo (si no hay)
+  try{
+    const existing = localStorage.getItem('homeNotes');
+    if(!existing){
+      localStorage.setItem('homeNotes', '📌 Revisa el Inbox Urgente.\n✅ Confirma reuniones de hoy.\n💬 Haz seguimiento a cotizaciones en negociación.');
+    }
+  }catch{}
+}
+
+
+function clearAllData(opts){
+  opts = opts || {};
+  const ask = (opts.ask!==false);
+  if(ask){
+    const ok = window.confirm('Esto eliminará servicios, clientes, tareas, reuniones y cotizaciones (solo en este usuario). ¿Continuar?');
+    if(!ok) return;
+  }
+  services = [];
+  clients = [];
+  appts = [];
+  tasks = [];
+  quotes = [];
+  quoteSel = new Set();
+
+  try{ localStorage.removeItem('homeNotes'); }catch{}
+  // Renders
+  renderServices();
+  renderClients();
+  renderQuotes();
+  renderApptList();
+  renderTasks();
+  refreshKPIs();
+  buildCalendar();
+  refreshReports();
+  refreshHomeDashboard();
+  hydrateClientsDatalist();
+  syncUserState();
+}
+
+function loadDemoData(opts){
+  opts = opts || {};
+  const force = !!opts.force;
+  if(force){
+    clearAllData({ ask:false });
+  }
+  seedDemoData();
+  renderServices();
+  renderClients();
+  renderQuotes();
+  renderApptList();
+  renderTasks();
+  refreshKPIs();
+  buildCalendar();
+  refreshReports();
+  refreshHomeDashboard();
+  hydrateClientsDatalist();
+  syncUserState();
+}
+
+
+function uiToast(msg){
+  try{
+    let el = document.getElementById('appToast');
+    if(!el){
+      el = document.createElement('div');
+      el.id = 'appToast';
+      el.className = 'app-toast';
+      document.body.appendChild(el);
+    }
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(()=>{ el.classList.remove('show'); }, 2200);
+  }catch{
+    try{ alert(msg); }catch{}
+  }
+}
+
+
+
+
+
+
 
 /* ---------- KPIs ---------- */
 function refreshKPIs(){
@@ -1642,7 +1857,7 @@ document.addEventListener('submit', e=>{
 });
 
 on($('#servicesList'), 'click', e=>{
-  const idx = e.target.dataset.del ?? e.target.dataset.edit;
+  const idx = (e.target.dataset.del || e.target.dataset.edit);
   if(idx!==undefined){
     const i = Number(idx);
     if(e.target.dataset.del!==undefined){
@@ -1815,8 +2030,8 @@ function initAgendaNotifications(){
 
   const prefs = getNotifPrefs();
   enabled.checked = !!prefs.enabled;
-  lead.value = String(prefs.leadMin ?? 15);
-  digest.value = prefs.digestTime ?? '20:00';
+  lead.value = String(((prefs.leadMin!==undefined && prefs.leadMin!==null) ? prefs.leadMin : 15));
+  digest.value = ((prefs.digestTime!==undefined && prefs.digestTime!==null) ? prefs.digestTime : '20:00');
 
   function refreshStatus(){
     const perm = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported';
@@ -1887,7 +2102,7 @@ function startReminderLoop(){
     const state = getState();
 
     // --- Avisos "antes de"
-    const leadMin = Math.max(1, Number(prefs.leadMin ?? 15));
+    const leadMin = Math.max(1, Number(((prefs.leadMin!==undefined && prefs.leadMin!==null) ? prefs.leadMin : 15)));
     const leadMs = leadMin*60*1000;
 
     // Reuniones futuras no realizadas
@@ -1920,7 +2135,7 @@ function startReminderLoop(){
     // --- Digest: hoy en la noche "mañana tienes..."
     // Enviar 1 vez por día, cuando llegue la hora configurada
     if(prefs.enabled){
-      const digestMin = timeToMinutes(prefs.digestTime ?? '20:00');
+      const digestMin = timeToMinutes(((prefs.digestTime!==undefined && prefs.digestTime!==null) ? prefs.digestTime : '20:00'));
       const nowMin = now.getHours()*60 + now.getMinutes();
       const todayKey = `digest:${localYMD(now)}`;
 
@@ -2740,13 +2955,13 @@ function refreshHomeDashboard(){
   const lm = $k('homeLeadMin');
   const dt = $k('homeDigestTime');
   if(en && typeof prefs.enabled !== 'undefined') en.checked = !!prefs.enabled;
-  if(lm) lm.value = String(prefs.leadMin ?? 15);
-  if(dt) dt.value = safeText(prefs.digestTime ?? '20:00');
+  if(lm) lm.value = String(((prefs.leadMin!==undefined && prefs.leadMin!==null) ? prefs.leadMin : 15));
+  if(dt) dt.value = safeText(((prefs.digestTime!==undefined && prefs.digestTime!==null) ? prefs.digestTime : '20:00'));
 
   function savePrefs(){
     const next = {
       enabled: !!getChecked(en),
-      leadMin: Math.max(1, getVal(Number(lm) ?? 15)),
+      leadMin: Math.max(1, (lm && lm.value ? Number(lm.value) : 15)),
       digestTime: getVal(safeText(dt) || '20:00'),
     };
     if(typeof setNotifPrefs==='function') setNotifPrefs(next);
@@ -2859,7 +3074,7 @@ function setupHomeUI(){
   });
   on(document.getElementById('qaTask'), 'click', ()=>{
     showSection('tareas');
-    setTimeout(()=>focusEl(document.getElementById('task-title'), ), 150);
+    setTimeout(()=>focusEl(document.getElementById('task-title')), 150);
   });
 
   // Búsqueda global
@@ -2941,6 +3156,10 @@ function setupHomeUI(){
       if(e.key==='Escape') close();
     });
   }
+
+  // Demo: cargar / limpiar
+  on(document.getElementById('demoLoadBtn'), 'click', ()=>{ loadDemoData({force:true}); uiToast('Datos demo cargados'); });
+  on(document.getElementById('demoClearBtn'), 'click', ()=>{ clearAllData(); uiToast('Datos limpiados'); });
 }
 
 
@@ -3055,8 +3274,8 @@ function hydratePrefsUI(){
   const lead = document.getElementById('notif-lead');
   const dig = document.getElementById('notif-digest');
   if(en) en.checked = !!prefs.notificationsEnabled;
-  if(lead) lead.value = String(prefs.leadMinutes ?? 15);
-  if(dig) dig.value = prefs.digestTime ?? '20:00';
+  if(lead) lead.value = String((prefs.leadMinutes!==undefined && prefs.leadMinutes!==null) ? prefs.leadMinutes : 15);
+  if(dig) dig.value = ((prefs.digestTime!==undefined && prefs.digestTime!==null) ? prefs.digestTime : '20:00');
 }
 
 
@@ -3239,7 +3458,7 @@ function filterApptByDate(dateISO){
 }
 
 /* ---------- Tareas ---------- */
-function priorityRank(p){ return {Alta:0,Media:1,Baja:2}[p] ?? 1 }
+function priorityRank(p){ return ({Alta:0,Media:1,Baja:2}[p]!==undefined ? {Alta:0,Media:1,Baja:2}[p] : 1) }
 function isOverdue(t){
   if(!t.due || t.done) return false;
   // Parse fecha límite en horario local (evita desfase por zona horaria)
@@ -3328,7 +3547,7 @@ document.addEventListener('submit', e=>{
 });
 
 on($('#taskList'), 'click', e=>{
-  const id = e.target.dataset.del ?? e.target.dataset.edit ?? e.target.dataset.toggle;
+  const id = (e.target.dataset.del || e.target.dataset.edit) || e.target.dataset.toggle;
   if(!id) return;
   if(e.target.dataset.del){
     tasks = tasks.filter(t=>t.id!==id);
@@ -3504,7 +3723,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
       // precargar form de tareas
       document.getElementById('task-project').value = (c && c.name) || '';
       location.hash = '#tareas';
-      focusEl(document.getElementById('task-title'), );
+      focusEl(document.getElementById('task-title'));
     }
     if(idE){
       const c = clients.find(x=>x.id===idE);
