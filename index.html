@@ -360,6 +360,57 @@ body{
 }
 .sidebar.open{ transform: translateX(0); }
 
+/* Topbar móvil/tablet (hamburguesa) */
+.topbar{
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  display: none;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+  z-index: 1300;
+  background: linear-gradient(180deg, rgba(11,12,16,.92), rgba(11,12,16,.70));
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  backdrop-filter: blur(10px);
+}
+.hamburger{
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(21,24,35,.65);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex-direction: column;
+}
+.hamburger span{
+  width: 18px;
+  height: 2px;
+  background: rgba(231,236,246,.92);
+  border-radius: 2px;
+}
+.topbar-title{
+  font-weight: 700;
+  letter-spacing: .2px;
+  color: rgba(231,236,246,.95);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.topbar-actions{ margin-left: auto; display:flex; gap:8px; }
+.topbar .btn.sm{ min-width: 44px; min-height: 44px; padding: 10px 12px; }
+
+/* En móvil/tablet: mostramos topbar y damos espacio */
+@media (max-width: 979px){
+  .topbar{ display:flex; }
+  body{ padding-top: 56px; }
+  .sidebar{ width: 86vw; max-width: 320px; }
+}
+
 .sidebar-top{
   display:flex;
   align-items:center;
@@ -663,6 +714,17 @@ input,select,textarea{font-size:16px} /* prevents iOS zoom */
   </div>
 </nav>
 <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+
+<div class="topbar" id="topbar">
+  <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="topbar-title" id="topbarTitle">Inicio</div>
+  <div class="topbar-actions">
+    <button class="btn sm ghost" id="tbQuickAdd" aria-label="Acciones rápidas">+</button>
+  </div>
+</div>
+
 
 
 <header id="home" class="hero container" data-view>
@@ -1697,7 +1759,12 @@ function showSection(id){
   // activar nav
   $$('#navMenu a[href^="#"]').forEach(a=>{
     const href = a.getAttribute('href') || '';
-    a.classList.toggle('active', href === `#${id}`);
+    const active = (href === `#${id}`);
+    a.classList.toggle('active', active);
+    if(active){
+      const t = document.getElementById('topbarTitle');
+      if(t) t.textContent = (a.textContent || 'Inicio').trim();
+    }
   });
   // accesibilidad: enfocar el título
   const h = (target ? target.querySelector('h1, h2') : null);
@@ -3321,13 +3388,32 @@ document.addEventListener('DOMContentLoaded', ()=>{
   initAgendaNotifications();
   startReminderLoop();
 
-  // Sidebar toggle (mobile)
-  const navToggle = document.getElementById('navToggle');
-  const navMenu   = document.getElementById('navMenu');
-  on(navToggle, 'click', ()=>{
-    navMenu.classList.toggle('open');
-    navToggle.classList.toggle('open');
-  });
+  // Sidebar / menú (móvil y tablet)
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const navToggle = document.getElementById('navToggle'); // botón dentro del sidebar (cerrar)
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+
+  function openSidebar(){
+    if(!sidebar || !overlay) return;
+    addClass(sidebar,'open');
+    addClass(overlay,'open');
+    overlay.setAttribute('aria-hidden','false');
+  }
+  function closeSidebar(){
+    if(!sidebar || !overlay) return;
+    remClass(sidebar,'open');
+    remClass(overlay,'open');
+    overlay.setAttribute('aria-hidden','true');
+  }
+  // Exponer para otros módulos (initSectionViews)
+  window.closeSidebar = closeSidebar;
+  window.openSidebar = openSidebar;
+
+  on(hamburgerBtn, 'click', openSidebar);
+  on(navToggle, 'click', closeSidebar);
+  on(overlay, 'click', closeSidebar);
+  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeSidebar(); });
 
   // Abrir modales
   on(document.getElementById('openQuoteModal'), 'click', ()=> openQuoteModal(''));
